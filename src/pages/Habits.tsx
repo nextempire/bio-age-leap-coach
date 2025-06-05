@@ -155,17 +155,19 @@ const Habits = () => {
                   </div>
 
                   <div className="flex items-center space-x-6">
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2 mb-2">
+                    <div className="text-right min-w-[120px]">
+                      <div className="flex items-center justify-end space-x-2 mb-2">
                         <Target className="w-4 h-4 text-gray-500" />
                         <span className="text-sm text-gray-600">
                           {habit.current}/{habit.target} {habit.unit}
                         </span>
                       </div>
-                      <Progress 
-                        value={(habit.current / habit.target) * 100} 
-                        className="w-24 h-2"
-                      />
+                      <div className="flex justify-end">
+                        <Progress 
+                          value={(habit.current / habit.target) * 100} 
+                          className="w-24 h-2"
+                        />
+                      </div>
                     </div>
 
                     <Button
