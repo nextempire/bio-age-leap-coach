@@ -1,14 +1,122 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Heart, Activity, Clock } from 'lucide-react';
+import { TrendingUp, Heart, Activity, Clock, Brain } from 'lucide-react';
+
+interface Habit {
+  id: number;
+  name: string;
+  streak: number;
+  completed: boolean;
+  target: number;
+  current: number;
+  unit: string;
+  category: 'movement' | 'nutrition' | 'recovery' | 'mind';
+  icon: string;
+}
 
 const Dashboard = () => {
   const [biologicalAge] = useState(28);
   const [chronologicalAge] = useState(32);
   const [improvementPercent] = useState(12.5);
+
+  // Sample habits data (in a real app, this would come from context/state management)
+  const habits: Habit[] = [
+    {
+      id: 1,
+      name: 'Morning Cardio',
+      streak: 5,
+      completed: false,
+      target: 30,
+      current: 24,
+      unit: 'minutes',
+      category: 'movement',
+      icon: '🏃'
+    },
+    {
+      id: 2,
+      name: 'Strength Training',
+      streak: 3,
+      completed: true,
+      target: 45,
+      current: 45,
+      unit: 'minutes',
+      category: 'movement',
+      icon: '💪'
+    },
+    {
+      id: 3,
+      name: 'Hydration',
+      streak: 12,
+      completed: false,
+      target: 8,
+      current: 5,
+      unit: 'glasses',
+      category: 'nutrition',
+      icon: '💧'
+    },
+    {
+      id: 4,
+      name: 'Protein Intake',
+      streak: 7,
+      completed: true,
+      target: 120,
+      current: 120,
+      unit: 'grams',
+      category: 'nutrition',
+      icon: '🥩'
+    },
+    {
+      id: 5,
+      name: 'Quality Sleep',
+      streak: 3,
+      completed: true,
+      target: 8,
+      current: 8.2,
+      unit: 'hours',
+      category: 'recovery',
+      icon: '😴'
+    },
+    {
+      id: 6,
+      name: 'Mindfulness',
+      streak: 7,
+      completed: true,
+      target: 10,
+      current: 15,
+      unit: 'minutes',
+      category: 'mind',
+      icon: '🧘'
+    }
+  ];
+
+  const categoryAggregations = useMemo(() => {
+    const categories = {
+      movement: { icon: Heart, name: 'Movement', color: 'text-red-500', bgColor: 'bg-red-100 text-red-700' },
+      nutrition: { icon: Activity, name: 'Nutrition', color: 'text-blue-500', bgColor: 'bg-blue-100 text-blue-700' },
+      recovery: { icon: Clock, name: 'Recovery', color: 'text-purple-500', bgColor: 'bg-purple-100 text-purple-700' },
+      mind: { icon: Brain, name: 'Mind', color: 'text-green-500', bgColor: 'bg-green-100 text-green-700' }
+    };
+
+    return Object.entries(categories).map(([categoryKey, categoryInfo]) => {
+      const categoryHabits = habits.filter(habit => habit.category === categoryKey);
+      const completedHabits = categoryHabits.filter(habit => habit.completed);
+      const totalProgress = categoryHabits.reduce((sum, habit) => sum + (habit.current / habit.target), 0);
+      const averageProgress = categoryHabits.length > 0 ? (totalProgress / categoryHabits.length) * 100 : 0;
+      const averageStreak = categoryHabits.length > 0 ? Math.round(categoryHabits.reduce((sum, habit) => sum + habit.streak, 0) / categoryHabits.length) : 0;
+
+      return {
+        key: categoryKey,
+        ...categoryInfo,
+        habitsCount: categoryHabits.length,
+        completedCount: completedHabits.length,
+        progress: Math.min(100, averageProgress),
+        streak: averageStreak
+      };
+    });
+  }, [habits]);
 
   const improvement = chronologicalAge - biologicalAge;
   const isImproving = improvement > 0;
@@ -48,69 +156,24 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Today's Habits Grid */}
+        {/* Category Overview Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <Heart className="w-6 h-6 text-red-500" />
-                <Badge variant="secondary" className="bg-red-100 text-red-700">
-                  5 day streak
-                </Badge>
-              </div>
-              <h3 className="font-semibold text-gray-900">Cardio</h3>
-              <p className="text-sm text-gray-600 mb-3">30 min target</p>
-              <Progress value={80} className="h-2" />
-              <p className="text-xs text-gray-500 mt-1">24/30 minutes</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <Activity className="w-6 h-6 text-blue-500" />
-                <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                  12 day streak
-                </Badge>
-              </div>
-              <h3 className="font-semibold text-gray-900">Hydration</h3>
-              <p className="text-sm text-gray-600 mb-3">8 glasses target</p>
-              <Progress value={62} className="h-2" />
-              <p className="text-xs text-gray-500 mt-1">5/8 glasses</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <Clock className="w-6 h-6 text-purple-500" />
-                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                  3 day streak
-                </Badge>
-              </div>
-              <h3 className="font-semibold text-gray-900">Sleep</h3>
-              <p className="text-sm text-gray-600 mb-3">8 hours target</p>
-              <Progress value={100} className="h-2" />
-              <p className="text-xs text-gray-500 mt-1">8.2/8 hours</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">🧘</span>
+          {categoryAggregations.map(({ key, icon: Icon, name, color, bgColor, habitsCount, completedCount, progress, streak }) => (
+            <Card key={key} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <Icon className={`w-6 h-6 ${color}`} />
+                  <Badge variant="secondary" className={bgColor}>
+                    {streak} avg streak
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="bg-green-100 text-green-700">
-                  7 day streak
-                </Badge>
-              </div>
-              <h3 className="font-semibold text-gray-900">Mindfulness</h3>
-              <p className="text-sm text-gray-600 mb-3">10 min target</p>
-              <Progress value={100} className="h-2" />
-              <p className="text-xs text-gray-500 mt-1">15/10 minutes</p>
-            </CardContent>
-          </Card>
+                <h3 className="font-semibold text-gray-900">{name}</h3>
+                <p className="text-sm text-gray-600 mb-3">{completedCount}/{habitsCount} habits completed</p>
+                <Progress value={progress} className="h-2" />
+                <p className="text-xs text-gray-500 mt-1">{Math.round(progress)}% average progress</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Quick Insights */}
@@ -124,21 +187,21 @@ const Dashboard = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <div>
                   <p className="font-medium text-gray-900">Great sleep consistency!</p>
-                  <p className="text-sm text-gray-600">Your 7+ hour sleep streak is helping lower your biological age by an estimated 0.3 years.</p>
+                  <p className="text-sm text-gray-600">Your recovery habits are helping lower your biological age by an estimated 0.3 years.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Hydration opportunity</p>
-                  <p className="text-sm text-gray-600">You're 3 glasses behind. Try drinking a full glass now to boost cellular function.</p>
+                  <p className="font-medium text-gray-900">Nutrition opportunity</p>
+                  <p className="text-sm text-gray-600">Complete your hydration goal to boost cellular function and energy levels.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Cardio boost needed</p>
-                  <p className="text-sm text-gray-600">6 more minutes of movement will complete your cardiovascular health goal for today.</p>
+                  <p className="font-medium text-gray-900">Movement boost needed</p>
+                  <p className="text-sm text-gray-600">6 more minutes of cardio will complete your movement goals for today.</p>
                 </div>
               </div>
             </div>

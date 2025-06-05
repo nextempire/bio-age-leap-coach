@@ -5,9 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Check, Plus, Target, Zap } from 'lucide-react';
+import HabitForm from '@/components/HabitForm';
+
+interface Habit {
+  id: number;
+  name: string;
+  streak: number;
+  completed: boolean;
+  target: number;
+  current: number;
+  unit: string;
+  category: 'movement' | 'nutrition' | 'recovery' | 'mind';
+  icon: string;
+}
 
 const Habits = () => {
-  const [habits, setHabits] = useState([
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [habits, setHabits] = useState<Habit[]>([
     {
       id: 1,
       name: 'Morning Cardio',
@@ -17,8 +31,7 @@ const Habits = () => {
       current: 24,
       unit: 'minutes',
       category: 'movement',
-      icon: '🏃',
-      color: 'red'
+      icon: '🏃'
     },
     {
       id: 2,
@@ -29,8 +42,7 @@ const Habits = () => {
       current: 5,
       unit: 'glasses',
       category: 'nutrition',
-      icon: '💧',
-      color: 'blue'
+      icon: '💧'
     },
     {
       id: 3,
@@ -41,8 +53,7 @@ const Habits = () => {
       current: 8.2,
       unit: 'hours',
       category: 'recovery',
-      icon: '😴',
-      color: 'purple'
+      icon: '😴'
     },
     {
       id: 4,
@@ -52,21 +63,8 @@ const Habits = () => {
       target: 10,
       current: 15,
       unit: 'minutes',
-      category: 'mental',
-      icon: '🧘',
-      color: 'green'
-    },
-    {
-      id: 5,
-      name: 'Protein Intake',
-      streak: 2,
-      completed: false,
-      target: 120,
-      current: 89,
-      unit: 'grams',
-      category: 'nutrition',
-      icon: '🥩',
-      color: 'orange'
+      category: 'mind',
+      icon: '🧘'
     }
   ]);
 
@@ -78,12 +76,30 @@ const Habits = () => {
     ));
   };
 
+  const handleHabitCreate = (newHabitData: {
+    name: string;
+    category: string;
+    target: number;
+    unit: string;
+    icon: string;
+  }) => {
+    const newHabit: Habit = {
+      id: Date.now(),
+      streak: 0,
+      completed: false,
+      current: 0,
+      ...newHabitData,
+      category: newHabitData.category as 'movement' | 'nutrition' | 'recovery' | 'mind'
+    };
+    setHabits([...habits, newHabit]);
+  };
+
   const getCategoryColor = (category: string) => {
     const colors = {
       movement: 'bg-red-100 text-red-700',
       nutrition: 'bg-blue-100 text-blue-700',
       recovery: 'bg-purple-100 text-purple-700',
-      mental: 'bg-green-100 text-green-700'
+      mind: 'bg-green-100 text-green-700'
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
@@ -184,13 +200,19 @@ const Habits = () => {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Add New Habit</h3>
               <p className="text-gray-600 mb-4">Create a custom habit to track</p>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setShowCreateForm(true)}>
                 <Zap className="w-4 h-4 mr-2" />
                 Create Habit
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        <HabitForm 
+          open={showCreateForm}
+          onOpenChange={setShowCreateForm}
+          onHabitCreate={handleHabitCreate}
+        />
       </div>
     </div>
   );
