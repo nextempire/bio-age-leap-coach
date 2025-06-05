@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -155,7 +154,7 @@ const Habits = () => {
                   </div>
 
                   <div className="flex items-center space-x-6">
-                    <div className="text-right min-w-[120px]">
+                    <div className="text-right w-32">
                       <div className="flex items-center justify-end space-x-2 mb-2">
                         <Target className="w-4 h-4 text-gray-500" />
                         <span className="text-sm text-gray-600 font-light">

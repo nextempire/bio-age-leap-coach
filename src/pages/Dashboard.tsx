@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -22,7 +21,6 @@ const Dashboard = () => {
   const [chronologicalAge] = useState(32);
   const [improvementPercent] = useState(12.5);
 
-  // Sample habits data (in a real app, this would come from context/state management)
   const habits: Habit[] = [
     {
       id: 1,
