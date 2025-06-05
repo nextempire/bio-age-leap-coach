@@ -108,12 +108,12 @@ const Habits = () => {
   const totalHabits = habits.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 font-parkinsans">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold font-parkinsans text-gray-900 mb-2">Daily Habits</h1>
-          <p className="text-gray-600 font-light">Build consistency, extend healthspan</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Daily Habits</h1>
+          <p className="text-gray-600">Build consistency, extend healthspan</p>
         </div>
 
         {/* Progress Summary */}
@@ -121,12 +121,12 @@ const Habits = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-xl font-semibold font-parkinsans">Today's Progress</h2>
-                <p className="text-purple-100 font-light">Keep building those healthy patterns</p>
+                <h2 className="text-xl font-semibold">Today's Progress</h2>
+                <p className="text-purple-100">Keep building those healthy patterns</p>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold font-parkinsans">{completedToday}/{totalHabits}</div>
-                <p className="text-purple-100 font-light">habits completed</p>
+                <div className="text-3xl font-bold">{completedToday}/{totalHabits}</div>
+                <p className="text-purple-100">habits completed</p>
               </div>
             </div>
             <Progress value={(completedToday / totalHabits) * 100} className="h-3 bg-purple-300" />
@@ -142,12 +142,12 @@ const Habits = () => {
                   <div className="flex items-center space-x-4">
                     <div className="text-2xl">{habit.icon}</div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 font-parkinsans">{habit.name}</h3>
+                      <h3 className="font-semibold text-gray-900">{habit.name}</h3>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Badge variant="secondary" className={`${getCategoryColor(habit.category)} font-light`}>
+                        <Badge variant="secondary" className={getCategoryColor(habit.category)}>
                           {habit.category}
                         </Badge>
-                        <Badge variant="outline" className="bg-orange-100 text-orange-700 font-light">
+                        <Badge variant="outline" className="bg-orange-100 text-orange-700">
                           🔥 {habit.streak} day streak
                         </Badge>
                       </div>
@@ -158,7 +158,7 @@ const Habits = () => {
                     <div className="text-right min-w-[120px]">
                       <div className="flex items-center justify-end space-x-2 mb-2">
                         <Target className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600 font-light">
+                        <span className="text-sm text-gray-600">
                           {habit.current}/{habit.target} {habit.unit}
                         </span>
                       </div>
@@ -200,8 +200,8 @@ const Habits = () => {
               <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <Plus className="w-6 h-6 text-gray-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2 font-parkinsans">Add New Habit</h3>
-              <p className="text-gray-600 mb-4 font-light">Create a custom habit to track</p>
+              <h3 className="font-semibold text-gray-900 mb-2">Add New Habit</h3>
+              <p className="text-gray-600 mb-4">Create a custom habit to track</p>
               <Button variant="outline" onClick={() => setShowCreateForm(true)}>
                 <Zap className="w-4 h-4 mr-2" />
                 Create Habit

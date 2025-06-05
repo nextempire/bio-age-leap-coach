@@ -122,33 +122,33 @@ const Dashboard = () => {
   const isImproving = improvement > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 font-parkinsans">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold font-parkinsans text-gray-900 mb-2">Your Health Journey</h1>
-          <p className="text-gray-600 font-light">Track your progress toward optimal health</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Health Journey</h1>
+          <p className="text-gray-600">Track your progress toward optimal health</p>
         </div>
 
         {/* Biological Age Card */}
         <Card className="bg-gradient-to-r from-blue-500 to-green-500 text-white border-none shadow-lg">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-semibold font-parkinsans">Biological Age</CardTitle>
+            <CardTitle className="text-xl font-semibold">Biological Age</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-4xl font-bold font-parkinsans">{biologicalAge}</div>
-                <div className="text-blue-100 mt-1 font-light">vs {chronologicalAge} chronological</div>
+                <div className="text-4xl font-bold">{biologicalAge}</div>
+                <div className="text-blue-100 mt-1">vs {chronologicalAge} chronological</div>
               </div>
               <div className="text-right">
                 <div className="flex items-center text-green-200">
                   <TrendingUp className="w-5 h-5 mr-1" />
-                  <span className="text-lg font-semibold font-parkinsans">
+                  <span className="text-lg font-semibold">
                     {isImproving ? `${improvement} years younger` : 'On track'}
                   </span>
                 </div>
-                <div className="text-blue-100 text-sm font-light">
+                <div className="text-blue-100 text-sm">
                   {improvementPercent}% improvement
                 </div>
               </div>
@@ -163,14 +163,14 @@ const Dashboard = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <Icon className={`w-6 h-6 ${color}`} />
-                  <Badge variant="secondary" className={`${bgColor} font-light`}>
+                  <Badge variant="secondary" className={bgColor}>
                     {streak} avg streak
                   </Badge>
                 </div>
-                <h3 className="font-semibold text-gray-900 font-parkinsans">{name}</h3>
-                <p className="text-sm text-gray-600 mb-3 font-light">{completedCount}/{habitsCount} habits completed</p>
+                <h3 className="font-semibold text-gray-900">{name}</h3>
+                <p className="text-sm text-gray-600 mb-3">{completedCount}/{habitsCount} habits completed</p>
                 <Progress value={progress} className="h-2" />
-                <p className="text-xs text-gray-500 mt-1 font-light">{Math.round(progress)}% average progress</p>
+                <p className="text-xs text-gray-500 mt-1">{Math.round(progress)}% average progress</p>
               </CardContent>
             </Card>
           ))}
@@ -179,29 +179,29 @@ const Dashboard = () => {
         {/* Quick Insights */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-parkinsans">Today's Insights</CardTitle>
+            <CardTitle className="text-lg">Today's Insights</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900 font-parkinsans">Great sleep consistency!</p>
-                  <p className="text-sm text-gray-600 font-light">Your recovery habits are helping lower your biological age by an estimated 0.3 years.</p>
+                  <p className="font-medium text-gray-900">Great sleep consistency!</p>
+                  <p className="text-sm text-gray-600">Your recovery habits are helping lower your biological age by an estimated 0.3 years.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900 font-parkinsans">Nutrition opportunity</p>
-                  <p className="text-sm text-gray-600 font-light">Complete your hydration goal to boost cellular function and energy levels.</p>
+                  <p className="font-medium text-gray-900">Nutrition opportunity</p>
+                  <p className="text-sm text-gray-600">Complete your hydration goal to boost cellular function and energy levels.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900 font-parkinsans">Movement boost needed</p>
-                  <p className="text-sm text-gray-600 font-light">6 more minutes of cardio will complete your movement goals for today.</p>
+                  <p className="font-medium text-gray-900">Movement boost needed</p>
+                  <p className="text-sm text-gray-600">6 more minutes of cardio will complete your movement goals for today.</p>
                 </div>
               </div>
             </div>
