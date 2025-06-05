@@ -63,32 +63,32 @@ const Coach = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4 font-parkinsans">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Health Coach</h1>
-          <p className="text-gray-600">Personalized guidance based on your data</p>
+          <h1 className="text-3xl font-bold font-parkinsans text-gray-900 mb-2">AI Health Coach</h1>
+          <p className="text-gray-600 font-light">Personalized guidance based on your data</p>
         </div>
 
         {/* Coach Stats */}
         <div className="grid md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">94%</div>
-              <p className="text-sm text-gray-600">Accuracy in predictions</p>
+              <div className="text-2xl font-bold text-green-600 font-parkinsans">94%</div>
+              <p className="text-sm text-gray-600 font-light">Accuracy in predictions</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">156</div>
-              <p className="text-sm text-gray-600">Conversations this month</p>
+              <div className="text-2xl font-bold text-blue-600 font-parkinsans">156</div>
+              <p className="text-sm text-gray-600 font-light">Conversations this month</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">2.3yr</div>
-              <p className="text-sm text-gray-600">Avg. biological age improvement</p>
+              <div className="text-2xl font-bold text-purple-600 font-parkinsans">2.3yr</div>
+              <p className="text-sm text-gray-600 font-light">Avg. biological age improvement</p>
             </CardContent>
           </Card>
         </div>
@@ -96,12 +96,12 @@ const Coach = () => {
         {/* Chat Interface */}
         <Card className="h-96">
           <CardHeader className="border-b">
-            <CardTitle className="flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 font-parkinsans">
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span>Dr. AI</span>
-              <Badge variant="secondary" className="bg-green-100 text-green-700">
+              <Badge variant="secondary" className="bg-green-100 text-green-700 font-light">
                 Online
               </Badge>
             </CardTitle>
@@ -120,8 +120,8 @@ const Coach = () => {
                         : 'bg-gray-100 text-gray-900'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                    <p className={`text-xs mt-1 ${
+                    <p className="text-sm whitespace-pre-wrap font-light">{message.text}</p>
+                    <p className={`text-xs mt-1 font-light ${
                       message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
                     }`}>
                       {message.timestamp}
@@ -138,7 +138,7 @@ const Coach = () => {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="flex-1"
+                  className="flex-1 font-light"
                 />
                 <Button onClick={sendMessage} size="icon">
                   <Send className="w-4 h-4" />
@@ -151,7 +151,7 @@ const Coach = () => {
         {/* Quick Prompts */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center space-x-2">
+            <CardTitle className="text-lg flex items-center space-x-2 font-parkinsans">
               <MessageSquare className="w-5 h-5" />
               <span>Quick Questions</span>
             </CardTitle>
@@ -162,7 +162,7 @@ const Coach = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className="justify-start h-auto p-3 text-left hover:bg-gray-50"
+                  className="justify-start h-auto p-3 text-left hover:bg-gray-50 font-light"
                   onClick={() => setInputMessage(prompt)}
                 >
                   <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
@@ -176,22 +176,22 @@ const Coach = () => {
         {/* Today's Recommendations */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Today's AI Recommendations</CardTitle>
+            <CardTitle className="text-lg font-parkinsans">Today's AI Recommendations</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Optimize meal timing</p>
-                  <p className="text-sm text-gray-600">Your glucose stability improves 23% when you eat within 2 hours of waking. Try having breakfast by 9 AM today.</p>
+                  <p className="font-medium text-gray-900 font-parkinsans">Optimize meal timing</p>
+                  <p className="text-sm text-gray-600 font-light">Your glucose stability improves 23% when you eat within 2 hours of waking. Try having breakfast by 9 AM today.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900">Extend your walk</p>
-                  <p className="text-sm text-gray-600">Adding 8 more minutes to your morning walk could improve your cardiovascular age by 0.1 years based on your current fitness level.</p>
+                  <p className="font-medium text-gray-900 font-parkinsans">Extend your walk</p>
+                  <p className="text-sm text-gray-600 font-light">Adding 8 more minutes to your morning walk could improve your cardiovascular age by 0.1 years based on your current fitness level.</p>
                 </div>
               </div>
             </div>

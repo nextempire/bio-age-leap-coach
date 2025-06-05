@@ -54,31 +54,32 @@ const HabitForm = ({ open, onOpenChange, onHabitCreate }: HabitFormProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md font-parkinsans">
         <DialogHeader>
-          <DialogTitle>Create New Habit</DialogTitle>
+          <DialogTitle className="font-parkinsans font-bold">Create New Habit</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Habit Name</Label>
+            <Label htmlFor="name" className="font-light">Habit Name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Morning Run"
               required
+              className="font-light"
             />
           </div>
 
           <div>
-            <Label>Category</Label>
+            <Label className="font-light">Category</Label>
             <RadioGroup value={category} onValueChange={setCategory} className="mt-2">
               {Object.entries(categories).map(([key, { icon, color }]) => (
                 <div key={key} className="flex items-center space-x-2">
                   <RadioGroupItem value={key} id={key} />
-                  <Label htmlFor={key} className="flex items-center space-x-2 cursor-pointer">
+                  <Label htmlFor={key} className="flex items-center space-x-2 cursor-pointer font-light">
                     <span className="text-lg">{icon}</span>
-                    <Badge variant="secondary" className={color}>
+                    <Badge variant="secondary" className={`${color} font-light`}>
                       {key}
                     </Badge>
                   </Label>
@@ -89,7 +90,7 @@ const HabitForm = ({ open, onOpenChange, onHabitCreate }: HabitFormProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="target">Daily Target</Label>
+              <Label htmlFor="target" className="font-light">Daily Target</Label>
               <Input
                 id="target"
                 type="number"
@@ -97,25 +98,27 @@ const HabitForm = ({ open, onOpenChange, onHabitCreate }: HabitFormProps) => {
                 onChange={(e) => setTarget(Number(e.target.value))}
                 min="1"
                 required
+                className="font-light"
               />
             </div>
             <div>
-              <Label htmlFor="unit">Unit</Label>
+              <Label htmlFor="unit" className="font-light">Unit</Label>
               <Input
                 id="unit"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
                 placeholder="e.g., minutes, glasses"
                 required
+                className="font-light"
               />
             </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="font-light">
               Cancel
             </Button>
-            <Button type="submit">Create Habit</Button>
+            <Button type="submit" className="font-light">Create Habit</Button>
           </div>
         </form>
       </DialogContent>
