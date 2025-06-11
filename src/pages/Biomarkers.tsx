@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Upload, CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
+import BackToHome from '@/components/BackToHome';
 
 const Biomarkers = () => {
   const [biomarkers] = useState([
@@ -111,6 +111,7 @@ const Biomarkers = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
+      <BackToHome />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
