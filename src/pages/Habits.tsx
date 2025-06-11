@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Check, Plus, Target, Zap } from 'lucide-react';
 import HabitForm from '@/components/HabitForm';
+import BackToHome from '@/components/BackToHome';
 
 interface Habit {
   id: number;
@@ -109,6 +109,7 @@ const Habits = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 font-parkinsans">
+      <BackToHome />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
