@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MessageSquare, Send, Sparkles, TrendingUp } from 'lucide-react';
+import BackToHome from '@/components/BackToHome';
 
 const Coach = () => {
   const [messages, setMessages] = useState([
@@ -64,6 +65,7 @@ const Coach = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+      <BackToHome />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
