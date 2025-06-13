@@ -72,28 +72,6 @@ const Coach = () => {
           <p className="text-gray-600 font-light">Personalized guidance based on your data</p>
         </div>
 
-        {/* Coach Stats */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600 font-parkinsans">94%</div>
-              <p className="text-sm text-gray-600 font-light">Accuracy in predictions</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 font-parkinsans">156</div>
-              <p className="text-sm text-gray-600 font-light">Conversations this month</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600 font-parkinsans">2.3yr</div>
-              <p className="text-sm text-gray-600 font-light">Avg. biological age improvement</p>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Chat Interface */}
         <Card className="h-96">
           <CardHeader className="border-b">
@@ -101,7 +79,7 @@ const Coach = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span>Dr. AI</span>
+              <span>MetaPulse</span>
               <Badge variant="secondary" className="bg-green-100 text-green-700 font-light">
                 Online
               </Badge>
