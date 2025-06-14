@@ -1,7 +1,8 @@
 
 import { NavLink } from 'react-router-dom';
-import { Home, Target, MessageSquare, Activity, User } from 'lucide-react';
+import { Home, Target, MessageSquare, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from './ThemeToggle';
 
 const Navigation = () => {
   const navItems = [
@@ -12,7 +13,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 md:relative md:border-t-0 md:border-r md:w-20 md:min-h-screen md:flex-col md:justify-start md:pt-8">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-2 z-50 md:relative md:border-t-0 md:border-r md:w-20 md:min-h-screen md:flex-col md:justify-start md:pt-8">
       <div className="flex justify-around md:flex-col md:space-y-6 md:space-x-0 space-x-4">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -22,8 +23,8 @@ const Navigation = () => {
               cn(
                 'flex flex-col items-center p-2 rounded-lg transition-colors',
                 isActive
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-primary bg-accent'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
           >
@@ -31,6 +32,16 @@ const Navigation = () => {
             <span className="text-xs mt-1 hidden md:block">{label}</span>
           </NavLink>
         ))}
+        
+        {/* Theme Toggle - only visible on desktop */}
+        <div className="hidden md:flex md:mt-auto md:mb-4">
+          <ThemeToggle />
+        </div>
+        
+        {/* Theme Toggle - visible on mobile in the nav bar */}
+        <div className="md:hidden">
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );
