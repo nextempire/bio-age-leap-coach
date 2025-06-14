@@ -97,59 +97,59 @@ const Habits = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      movement: 'bg-red-100 text-red-700',
-      nutrition: 'bg-blue-100 text-blue-700',
-      recovery: 'bg-purple-100 text-purple-700',
-      mind: 'bg-green-100 text-green-700'
+      movement: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+      nutrition: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+      recovery: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+      mind: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
   };
 
   const completedToday = habits.filter(h => h.completed).length;
   const totalHabits = habits.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-2 sm:p-4 font-parkinsans">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 font-parkinsans">
       <BackToHome />
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="text-center py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold font-parkinsans text-gray-900 mb-2">Daily Habits</h1>
-          <p className="text-gray-600 font-light">Build consistency, extend healthspan</p>
+          <h1 className="text-2xl sm:text-3xl font-bold font-parkinsans text-gray-900 dark:text-white mb-2">Daily Habits</h1>
+          <p className="text-gray-600 dark:text-gray-300 font-light">Build consistency, extend healthspan</p>
         </div>
 
         {/* Progress Summary */}
-        <Card className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none shadow-lg">
+        <Card className="bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-700 dark:to-pink-700 text-white border-none shadow-lg">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold font-parkinsans">Today's Progress</h2>
-                <p className="text-purple-100 font-light">Keep building those healthy patterns</p>
+                <p className="text-purple-100 dark:text-purple-200 font-light">Keep building those healthy patterns</p>
               </div>
               <div className="text-left sm:text-right">
                 <div className="text-2xl sm:text-3xl font-bold font-parkinsans">{completedToday}/{totalHabits}</div>
-                <p className="text-purple-100 font-light">habits completed</p>
+                <p className="text-purple-100 dark:text-purple-200 font-light">habits completed</p>
               </div>
             </div>
-            <Progress value={(completedToday / totalHabits) * 100} className="h-3 bg-purple-300" />
+            <Progress value={(completedToday / totalHabits) * 100} className="h-3 bg-purple-300 dark:bg-purple-600" />
           </CardContent>
         </Card>
 
         {/* Habit List */}
         <div className="space-y-3 sm:space-y-4">
           {habits.map((habit) => (
-            <Card key={habit.id} className={`transition-all duration-200 hover:shadow-md ${habit.completed ? 'ring-2 ring-green-200 bg-green-50' : ''}`}>
+            <Card key={habit.id} className={`transition-all duration-200 hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${habit.completed ? 'ring-2 ring-green-200 dark:ring-green-700 bg-green-50 dark:bg-green-900/20' : ''}`}>
               <CardContent className="p-3 sm:p-6">
                 <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
                     <div className="text-xl sm:text-2xl flex-shrink-0">{habit.icon}</div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-gray-900 font-parkinsans text-sm sm:text-base truncate">{habit.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white font-parkinsans text-sm sm:text-base truncate">{habit.name}</h3>
                       <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
                         <Badge variant="secondary" className={`${getCategoryColor(habit.category)} font-light text-xs`}>
                           {habit.category}
                         </Badge>
-                        <Badge variant="outline" className="bg-orange-100 text-orange-700 font-light text-xs">
+                        <Badge variant="outline" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700 font-light text-xs">
                           🔥 {habit.streak} day streak
                         </Badge>
                       </div>
@@ -159,8 +159,8 @@ const Habits = () => {
                   <div className="flex items-center justify-between sm:justify-end space-x-3 sm:space-x-6">
                     <div className="flex-1 sm:text-right sm:min-w-[120px]">
                       <div className="flex items-center justify-start sm:justify-end space-x-2 mb-2">
-                        <Target className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm text-gray-600 font-light truncate">
+                        <Target className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-light truncate">
                           {habit.current}/{habit.target} {habit.unit}
                         </span>
                       </div>
@@ -178,8 +178,8 @@ const Habits = () => {
                       size="icon"
                       className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 ${
                         habit.completed 
-                          ? 'bg-green-500 hover:bg-green-600 text-white' 
-                          : 'hover:bg-gray-50'
+                          ? 'bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700' 
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-600'
                       }`}
                     >
                       {habit.completed ? (
@@ -196,15 +196,15 @@ const Habits = () => {
         </div>
 
         {/* Add New Habit */}
-        <Card className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors">
+        <Card className="border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-colors dark:bg-gray-800">
           <CardContent className="p-4 sm:p-6">
             <div className="text-center">
-              <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+              <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-300" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2 font-parkinsans text-sm sm:text-base">Add New Habit</h3>
-              <p className="text-gray-600 mb-3 sm:mb-4 font-light text-xs sm:text-sm">Create a custom habit to track</p>
-              <Button variant="outline" onClick={() => setShowCreateForm(true)} className="text-sm">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2 font-parkinsans text-sm sm:text-base">Add New Habit</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-3 sm:mb-4 font-light text-xs sm:text-sm">Create a custom habit to track</p>
+              <Button variant="outline" onClick={() => setShowCreateForm(true)} className="text-sm dark:border-gray-600 dark:hover:bg-gray-700">
                 <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Create Habit
               </Button>
