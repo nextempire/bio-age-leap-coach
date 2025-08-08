@@ -139,7 +139,7 @@ const Habits = () => {
         {/* Habit List */}
         <div className="space-y-3 sm:space-y-4">
           {habits.map((habit) => (
-            <Card key={habit.id} className={`transition-all duration-200 hover:shadow-md ${habit.completed ? 'ring-2 ring-accent/40 bg-card/60' : ''}`}>
+            <Card key={habit.id} className={`glow-card transition-all duration-200 hover:shadow-md ${habit.completed ? 'ring-2 ring-accent/40 bg-card/60' : ''}`}>
               <CardContent className="p-3 sm:p-6">
                 <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
