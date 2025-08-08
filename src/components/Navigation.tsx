@@ -12,7 +12,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50 md:relative md:border-t-0 md:border-r md:w-20 md:min-h-screen md:flex-col md:justify-start md:pt-8">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50 border-t border-border px-4 py-2 z-50 md:relative md:border-t-0 md:border-r md:w-20 md:min-h-screen md:flex-col md:justify-start md:pt-8">
       <div className="flex justify-around md:flex-col md:space-y-6 md:space-x-0 space-x-4">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -20,10 +20,10 @@ const Navigation = () => {
             to={to}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center p-2 rounded-lg transition-colors',
+                'flex flex-col items-center p-2 rounded-lg transition-colors hover-scale',
                 isActive
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-primary bg-primary/10 neon-border'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
               )
             }
           >
