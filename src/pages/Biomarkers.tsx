@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Upload, CheckCircle, AlertCircle, Clock, TrendingUp } from 'lucide-react';
 import BackToHome from '@/components/BackToHome';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 const Biomarkers = () => {
   const [biomarkers] = useState([
@@ -79,48 +80,54 @@ const Biomarkers = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-accent" />;
       case 'active':
-        return <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse" />;
+        return <div className="w-5 h-5 bg-accent rounded-full animate-pulse" />;
       case 'overdue':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="w-5 h-5 text-destructive" />;
       case 'recommended':
-        return <Clock className="w-5 h-5 text-orange-500" />;
+        return <Clock className="w-5 h-5 text-accent" />;
       default:
-        return <Clock className="w-5 h-5 text-gray-500" />;
+        return <Clock className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-700';
+        return 'bg-accent/20 text-accent-foreground';
       case 'active':
-        return 'bg-green-100 text-green-700';
+        return 'bg-accent/20 text-accent-foreground';
       case 'overdue':
-        return 'bg-red-100 text-red-700';
+        return 'bg-destructive/20 text-destructive-foreground';
       case 'recommended':
-        return 'bg-orange-100 text-orange-700';
+        return 'bg-secondary text-secondary-foreground';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   const completedTests = biomarkers.filter(b => b.status === 'completed' || b.status === 'active').length;
   const totalTests = biomarkers.length;
 
+  usePageSEO({
+    title: 'Biomarkers - Metapulse Demo',
+    description: 'Monitor lab tests and real-time biomarkers with clear status and results.',
+    canonicalPath: '/biomarkers'
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
+    <div className="min-h-screen bg-app p-4">
       <BackToHome />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Biomarker Tracking</h1>
-          <p className="text-gray-600">Monitor your health at the cellular level</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Biomarker Tracking</h1>
+          <p className="text-muted-foreground">Monitor your health at the cellular level</p>
         </div>
 
         {/* Progress Overview */}
-        <Card className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-none shadow-lg">
+        <Card className="bg-gradient-to-r from-primary to-accent text-foreground border-none shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -132,7 +139,7 @@ const Biomarkers = () => {
                 <p className="text-orange-100">tests completed</p>
               </div>
             </div>
-            <Progress value={(completedTests / totalTests) * 100} className="h-3 bg-orange-300" />
+            <Progress value={(completedTests / totalTests) * 100} className="h-3" />
           </CardContent>
         </Card>
 
@@ -140,26 +147,26 @@ const Biomarkers = () => {
         <div className="grid md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">3</div>
-              <p className="text-sm text-gray-600">Active monitors</p>
+              <div className="text-2xl font-bold text-accent">3</div>
+              <p className="text-sm text-muted-foreground">Active monitors</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">2</div>
-              <p className="text-sm text-gray-600">Recent tests</p>
+              <div className="text-2xl font-bold text-accent">2</div>
+              <p className="text-sm text-muted-foreground">Recent tests</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-600">1</div>
-              <p className="text-sm text-gray-600">Overdue</p>
+              <div className="text-2xl font-bold text-destructive">1</div>
+              <p className="text-sm text-muted-foreground">Overdue</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">1</div>
-              <p className="text-sm text-gray-600">Recommended</p>
+              <div className="text-2xl font-bold text-accent">1</div>
+              <p className="text-sm text-muted-foreground">Recommended</p>
             </CardContent>
           </Card>
         </div>
@@ -175,17 +182,17 @@ const Biomarkers = () => {
                       {getStatusIcon(biomarker.status)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{biomarker.name}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{biomarker.description}</p>
+                      <h3 className="font-semibold text-foreground mb-1">{biomarker.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{biomarker.description}</p>
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline">{biomarker.category}</Badge>
                         <Badge variant="secondary" className={getStatusColor(biomarker.status)}>
                           {biomarker.status}
                         </Badge>
                         <Badge variant="outline" className={
-                          biomarker.impact === 'High' ? 'bg-red-100 text-red-700' :
-                          biomarker.impact === 'Medium' ? 'bg-orange-100 text-orange-700' :
-                          'bg-gray-100 text-gray-700'
+                          biomarker.impact === 'High' ? 'bg-destructive/20 text-destructive-foreground' :
+                          biomarker.impact === 'Medium' ? 'bg-secondary text-secondary-foreground' :
+                          'bg-muted text-muted-foreground'
                         }>
                           {biomarker.impact} impact
                         </Badge>
@@ -194,13 +201,13 @@ const Biomarkers = () => {
                   </div>
                   
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Last: {biomarker.lastTest}</p>
-                    <p className="text-sm text-gray-600">Next: {biomarker.nextDue}</p>
+                    <p className="text-sm text-muted-foreground">Last: {biomarker.lastTest}</p>
+                    <p className="text-sm text-muted-foreground">Next: {biomarker.nextDue}</p>
                   </div>
                 </div>
 
                 {biomarker.results && (
-                  <div className="bg-gray-50 rounded-lg p-4 mt-4">
+                  <div className="bg-card/60 rounded-lg p-4 mt-4">
                     <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                       <TrendingUp className="w-4 h-4 mr-2" />
                       Latest Results
@@ -208,9 +215,9 @@ const Biomarkers = () => {
                     <div className="grid md:grid-cols-3 gap-4">
                       {Object.entries(biomarker.results).map(([key, result]) => (
                         <div key={key} className="text-center">
-                          <p className="text-sm text-gray-600 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                          <p className="text-lg font-semibold text-gray-900">{result.value}</p>
-                          <p className="text-xs text-gray-500">Range: {result.range}</p>
+                          <p className="text-sm text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                          <p className="text-lg font-semibold text-foreground">{result.value}</p>
+                          <p className="text-xs text-muted-foreground">Range: {result.range}</p>
                         </div>
                       ))}
                     </div>
@@ -231,14 +238,14 @@ const Biomarkers = () => {
         </div>
 
         {/* Add New Test */}
-        <Card className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors">
+        <Card className="border-dashed border-2 border-border hover:border-accent transition-colors">
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
                 <Upload className="w-6 h-6 text-gray-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Upload Lab Results</h3>
-              <p className="text-gray-600 mb-4">Add new test results or connect a device</p>
+              <h3 className="font-semibold text-foreground mb-2">Upload Lab Results</h3>
+              <p className="text-muted-foreground mb-4">Add new test results or connect a device</p>
               <Button variant="outline">
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Results

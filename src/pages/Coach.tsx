@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MessageSquare, Send, Sparkles, TrendingUp } from 'lucide-react';
 import BackToHome from '@/components/BackToHome';
+import { usePageSEO } from '@/hooks/usePageSEO';
 
 const Coach = () => {
   const [messages, setMessages] = useState([
@@ -62,25 +63,31 @@ const Coach = () => {
     "Help me build a morning routine"
   ];
 
+  usePageSEO({
+    title: 'Coach - Metapulse Demo',
+    description: 'AI health coach with personalized insights and guidance.',
+    canonicalPath: '/coach'
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4 font-parkinsans">
+    <div className="min-h-screen bg-app p-4 font-parkinsans">
       <BackToHome />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold font-parkinsans text-gray-900 mb-2">AI Health Coach</h1>
-          <p className="text-gray-600 font-light">Personalized guidance based on your data</p>
+          <h1 className="text-3xl font-bold font-parkinsans text-foreground mb-2">AI Health Coach</h1>
+          <p className="text-muted-foreground font-light">Personalized guidance based on your data</p>
         </div>
 
         {/* Chat Interface */}
         <Card className="h-96">
-          <CardHeader className="border-b">
+          <CardHeader className="border-b border-border">
             <CardTitle className="flex items-center space-x-2 font-parkinsans">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary-foreground" />
               </div>
               <span>MetaPulse</span>
-              <Badge variant="secondary" className="bg-green-100 text-green-700 font-light">
+              <Badge variant="secondary" className="bg-accent/20 text-accent-foreground font-light">
                 Online
               </Badge>
             </CardTitle>
@@ -101,7 +108,7 @@ const Coach = () => {
                   >
                     <p className="text-sm whitespace-pre-wrap font-light">{message.text}</p>
                     <p className={`text-xs mt-1 font-light ${
-                      message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                      message.sender === 'user' ? 'text-foreground/70' : 'text-muted-foreground'
                     }`}>
                       {message.timestamp}
                     </p>
@@ -141,7 +148,7 @@ const Coach = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className="justify-start h-auto p-3 text-left hover:bg-gray-50 font-light"
+                  className="justify-start h-auto p-3 text-left hover:bg-accent/10 font-light"
                   onClick={() => setInputMessage(prompt)}
                 >
                   <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
@@ -159,18 +166,18 @@ const Coach = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 bg-card/60 rounded-lg">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900 font-parkinsans">Optimize meal timing</p>
-                  <p className="text-sm text-gray-600 font-light">Your glucose stability improves 23% when you eat within 2 hours of waking. Try having breakfast by 9 AM today.</p>
+                  <p className="font-medium text-foreground font-parkinsans">Optimize meal timing</p>
+                  <p className="text-sm text-muted-foreground font-light">Your glucose stability improves 23% when you eat within 2 hours of waking. Try having breakfast by 9 AM today.</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 bg-card/60 rounded-lg">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
                 <div>
-                  <p className="font-medium text-gray-900 font-parkinsans">Extend your walk</p>
-                  <p className="text-sm text-gray-600 font-light">Adding 8 more minutes to your morning walk could improve your cardiovascular age by 0.1 years based on your current fitness level.</p>
+                  <p className="font-medium text-foreground font-parkinsans">Extend your walk</p>
+                  <p className="text-sm text-muted-foreground font-light">Adding 8 more minutes to your morning walk could improve your cardiovascular age by 0.1 years based on your current fitness level.</p>
                 </div>
               </div>
             </div>

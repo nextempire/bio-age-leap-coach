@@ -1,6 +1,7 @@
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { usePageSEO } from "@/hooks/usePageSEO";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,12 +13,14 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
+  usePageSEO({ title: '404 - Metapulse Demo', description: 'Page not found', canonicalPath: location.pathname });
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 font-parkinsans">
+    <div className="min-h-screen flex items-center justify-center bg-app font-parkinsans">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4 font-parkinsans">404</h1>
-        <p className="text-xl text-gray-600 mb-4 font-light">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline font-light">
+        <p className="text-xl text-muted-foreground mb-4 font-light">Oops! Page not found</p>
+        <a href="/" className="text-accent hover:opacity-90 underline font-light">
           Return to Home
         </a>
       </div>
