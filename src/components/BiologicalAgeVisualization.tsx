@@ -260,50 +260,33 @@ const BiologicalAgeVisualization = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="grid grid-cols-2 gap-4 h-64">
-        {/* Biological Age - Point Cloud */}
-        <div className="rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30">
-          <Canvas
-            camera={{ position: [0, 0, 8], fov: 50 }}
-            gl={{ alpha: true, antialias: true }}
-            style={{ background: 'transparent' }}
-          >
-            <ambientLight intensity={0.5} />
-            <pointLight position={[8, 8, 8]} intensity={1} color="#00ffff" />
-            <pointLight position={[-8, -8, -8]} intensity={0.5} color="#ff00ff" />
-            <AnimatedPointCloud targetAge={biologicalAge} startAge={1} />
-          </Canvas>
-          
-          {/* Biological Age Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
-              <div className="text-4xl font-bold font-parkinsans text-neon neon-glow mb-1">
-                {currentDisplayAge}
-              </div>
-              <div className="text-xs text-muted-foreground font-light">
-                biological age
-              </div>
+      <div className="h-64 rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30 cursor-pointer">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 50 }}
+          gl={{ alpha: true, antialias: true }}
+          style={{ background: 'transparent' }}
+        >
+          <ambientLight intensity={0.3} />
+          <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
+          <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
+          <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} />
+        </Canvas>
+        
+        {/* Floating Chronological Age Display */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center">
+            <div className="text-6xl font-bold font-parkinsans text-neon neon-glow mb-2 animate-pulse">
+              {chronologicalAge}
+            </div>
+            <div className="text-sm text-muted-foreground font-light">
+              chronological age
             </div>
           </div>
         </div>
-
-        {/* Chronological Age - Interactive Wireframe Network */}
-        <div className="rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30 cursor-pointer">
-          <Canvas
-            camera={{ position: [0, 0, 8], fov: 50 }}
-            gl={{ alpha: true, antialias: true }}
-            style={{ background: 'transparent' }}
-          >
-            <ambientLight intensity={0.3} />
-            <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
-            <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
-            <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} />
-          </Canvas>
-          
-          {/* Label only */}
-          <div className="absolute bottom-2 left-2 text-xs text-muted-foreground font-light pointer-events-none">
-            chronological age
-          </div>
+        
+        {/* Click hint */}
+        <div className="absolute bottom-3 right-3 text-xs text-muted-foreground/70 font-light pointer-events-none">
+          click network to pulse
         </div>
       </div>
     </div>
