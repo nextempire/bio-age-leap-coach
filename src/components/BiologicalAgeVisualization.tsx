@@ -1,6 +1,6 @@
 import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Points, PointMaterial, Line } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface PointCloudProps {
@@ -83,6 +83,122 @@ const AnimatedPointCloud = ({ targetAge, startAge }: PointCloudProps) => {
   );
 };
 
+interface WireframeNetworkProps {
+  age: number;
+  onNodeClick: () => void;
+}
+
+const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const [pulseActive, setPulseActive] = useState(false);
+  const [pulseTime, setPulseTime] = useState(0);
+  const { raycaster, camera, gl } = useThree();
+  
+  // Generate network nodes based on age
+  const { nodes, connections } = useMemo(() => {
+    const nodeCount = Math.min(age, 20); // Max 20 nodes for performance
+    const nodes: THREE.Vector3[] = [];
+    const connections: [number, number][] = [];
+    
+    // Create nodes in a sphere formation
+    for (let i = 0; i < nodeCount; i++) {
+      const radius = 2 + Math.random() * 1.5;
+      const theta = (i / nodeCount) * Math.PI * 2;
+      const phi = Math.acos(1 - 2 * Math.random());
+      
+      nodes.push(new THREE.Vector3(
+        radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.sin(phi) * Math.sin(theta),
+        radius * Math.cos(phi)
+      ));
+    }
+    
+    // Create connections between nearby nodes
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (nodes[i].distanceTo(nodes[j]) < 2.5) {
+          connections.push([i, j]);
+        }
+      }
+    }
+    
+    return { nodes, connections };
+  }, [age]);
+
+  // Handle click detection
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (!groupRef.current) return;
+      
+      const rect = gl.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(groupRef.current.children, true);
+      
+      if (intersects.length > 0) {
+        setPulseActive(true);
+        setPulseTime(0);
+        onNodeClick();
+        
+        // Reset pulse after animation
+        setTimeout(() => setPulseActive(false), 2000);
+      }
+    };
+    
+    gl.domElement.addEventListener('click', handleClick);
+    return () => gl.domElement.removeEventListener('click', handleClick);
+  }, [raycaster, camera, gl, onNodeClick]);
+
+  useFrame((state) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.005;
+      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+    }
+    
+    if (pulseActive) {
+      setPulseTime(prev => prev + 0.02);
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Render nodes */}
+      {nodes.map((node, index) => (
+        <mesh key={`node-${index}`} position={node}>
+          <sphereGeometry args={[0.08, 8, 8]} />
+          <meshBasicMaterial 
+            color={pulseActive ? "#ff00ff" : "#00ffff"} 
+            transparent
+            opacity={pulseActive ? 0.9 : 0.7}
+          />
+        </mesh>
+      ))}
+      
+      {/* Render connections */}
+      {connections.map(([start, end], index) => {
+        const points = [nodes[start], nodes[end]];
+        const intensity = pulseActive ? 
+          Math.sin(pulseTime * 10 - index * 0.1) * 0.5 + 0.5 : 0.5;
+        
+        return (
+          <Line
+            key={`connection-${index}`}
+            points={points}
+            color={pulseActive ? "#ff00ff" : "#00ffff"}
+            lineWidth={1}
+            transparent
+            opacity={intensity * 0.6}
+          />
+        );
+      })}
+    </group>
+  );
+};
+
 interface BiologicalAgeVisualizationProps {
   biologicalAge: number;
   chronologicalAge: number;
@@ -114,29 +230,67 @@ const BiologicalAgeVisualization = ({
     return () => clearInterval(interval);
   }, [biologicalAge]);
 
+  const handleNodeClick = () => {
+    console.log('Network node clicked! Energy pulse activated.');
+  };
+
   return (
     <div className={`relative ${className}`}>
-      <div className="w-full h-48 rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30">
-        <Canvas
-          camera={{ position: [0, 0, 10], fov: 50 }}
-          gl={{ alpha: true, antialias: true }}
-          style={{ background: 'transparent' }}
-        >
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} color="#00ffff" />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ff00ff" />
-          <AnimatedPointCloud targetAge={biologicalAge} startAge={1} />
-        </Canvas>
-        
-        {/* Overlay text */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-center">
-            <div className="text-6xl font-bold font-parkinsans text-neon neon-glow mb-2">
-              {currentDisplayAge}
+      <div className="grid grid-cols-2 gap-4 h-64">
+        {/* Biological Age - Point Cloud */}
+        <div className="rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30">
+          <Canvas
+            camera={{ position: [0, 0, 8], fov: 50 }}
+            gl={{ alpha: true, antialias: true }}
+            style={{ background: 'transparent' }}
+          >
+            <ambientLight intensity={0.5} />
+            <pointLight position={[8, 8, 8]} intensity={1} color="#00ffff" />
+            <pointLight position={[-8, -8, -8]} intensity={0.5} color="#ff00ff" />
+            <AnimatedPointCloud targetAge={biologicalAge} startAge={1} />
+          </Canvas>
+          
+          {/* Biological Age Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center">
+              <div className="text-4xl font-bold font-parkinsans text-neon neon-glow mb-1">
+                {currentDisplayAge}
+              </div>
+              <div className="text-xs text-muted-foreground font-light">
+                biological age
+              </div>
             </div>
-            <div className="text-sm text-muted-foreground font-light">
-              vs {chronologicalAge} chronological
+          </div>
+        </div>
+
+        {/* Chronological Age - Interactive Wireframe Network */}
+        <div className="rounded-lg overflow-hidden bg-card/20 backdrop-blur-sm border border-neon/30 cursor-pointer">
+          <Canvas
+            camera={{ position: [0, 0, 8], fov: 50 }}
+            gl={{ alpha: true, antialias: true }}
+            style={{ background: 'transparent' }}
+          >
+            <ambientLight intensity={0.3} />
+            <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
+            <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
+            <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} />
+          </Canvas>
+          
+          {/* Chronological Age Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center">
+              <div className="text-4xl font-bold font-parkinsans text-neon neon-glow mb-1">
+                {chronologicalAge}
+              </div>
+              <div className="text-xs text-muted-foreground font-light">
+                chronological age
+              </div>
             </div>
+          </div>
+          
+          {/* Click hint */}
+          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/70 font-light pointer-events-none">
+            click to pulse
           </div>
         </div>
       </div>
