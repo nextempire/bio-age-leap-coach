@@ -97,7 +97,7 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
   
   // Generate network nodes based on age
   const { nodes, connections, electrodes } = useMemo(() => {
-    const nodeCount = Math.min(age, 20); // Max 20 nodes for performance
+    const nodeCount = Math.min(Math.max(age / 3, 6), 12); // Fewer nodes (6-12)
     const nodes: THREE.Vector3[] = [];
     const connections: [number, number][] = [];
     const electrodes: { connection: [number, number], startTime: number }[] = [];
@@ -115,10 +115,10 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       ));
     }
     
-    // Create connections between nearby nodes
+    // Create MORE connections with longer distance threshold
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
-        if (nodes[i].distanceTo(nodes[j]) < 2.5) {
+        if (nodes[i].distanceTo(nodes[j]) < 4.0) { // Increased from 2.5 to 4.0 for more lines
           connections.push([i, j]);
         }
       }
@@ -128,7 +128,7 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
     connections.forEach((connection, index) => {
       electrodes.push({
         connection,
-        startTime: Math.random() * 5 // Random start time between 0-5 seconds
+        startTime: Math.random() * 2 // Faster cycling with shorter random start times
       });
     });
     
@@ -160,17 +160,20 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.005;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+      // More snappy rotation with jerky movements
+      const time = state.clock.elapsedTime;
+      groupRef.current.rotation.y += 0.008 + Math.sin(time * 8) * 0.002;
+      groupRef.current.rotation.x = Math.sin(time * 0.4) * 0.15 + Math.sin(time * 12) * 0.03;
     }
     
-    // Continuous pulsing animation
-    setPulseTime(state.clock.elapsedTime * 2);
+    // Faster, more snappy pulsing animation
+    setPulseTime(state.clock.elapsedTime * 4); // Doubled speed for snappier animation
     
-    // Update text color and scale based on pulse
+    // Update text color and scale with more dramatic jumps
     if (textRef.current) {
-      const pulseIntensity = Math.sin(state.clock.elapsedTime * 3) * 0.3 + 0.7;
-      textRef.current.scale.setScalar(0.8 + pulseIntensity * 0.2);
+      const pulseIntensity = Math.sin(state.clock.elapsedTime * 6) * 0.4 + 0.6;
+      const jumpyScale = 0.7 + pulseIntensity * 0.3 + Math.sin(state.clock.elapsedTime * 15) * 0.05;
+      textRef.current.scale.setScalar(jumpyScale);
     }
   });
 
@@ -240,27 +243,40 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
           const startNode = nodes[start];
           const endNode = nodes[end];
           
-          // Calculate electrode position along the connection
-          const cycleTime = 2; // Time to complete one cycle
-          const adjustedTime = (pulseTime * 0.5 - startTime) % cycleTime;
+          // Calculate electrode position along the connection - faster movement
+          const cycleTime = 0.8; // Much faster cycle time for snappy movement
+          const adjustedTime = (pulseTime * 1.2 - startTime) % cycleTime;
           const progress = Math.max(0, Math.min(1, adjustedTime / cycleTime));
           
           const position = new THREE.Vector3()
             .lerpVectors(startNode, endNode, progress);
           
-          // Electrode intensity and size based on movement
-          const electrodeIntensity = Math.sin(progress * Math.PI) * 0.8 + 0.2;
-          const size = 0.04 + electrodeIntensity * 0.02;
+          // Electrode intensity and size with more dramatic variations
+          const electrodeIntensity = Math.sin(progress * Math.PI) * 0.9 + 0.3;
+          const size = 0.06 + electrodeIntensity * 0.04; // Bigger, more visible electrodes
           
           return (
-            <mesh key={`electrode-${index}`} position={position}>
-              <sphereGeometry args={[size, 6, 6]} />
-              <meshBasicMaterial 
-                color={new THREE.Color(1, 1, 1)}
-                transparent
-                opacity={electrodeIntensity}
-              />
-            </mesh>
+            <group key={`electrode-group-${index}`}>
+              {/* Main electrode sphere */}
+              <mesh position={position}>
+                <sphereGeometry args={[size, 8, 8]} />
+                <meshBasicMaterial 
+                  color={new THREE.Color(1, 1, 1)}
+                  transparent
+                  opacity={electrodeIntensity}
+                />
+              </mesh>
+              
+              {/* Outer glow effect */}
+              <mesh position={position}>
+                <sphereGeometry args={[size * 2, 8, 8]} />
+                <meshBasicMaterial 
+                  color={new THREE.Color(0.5, 0.8, 1)}
+                  transparent
+                  opacity={electrodeIntensity * 0.3}
+                />
+              </mesh>
+            </group>
           );
         })}
       </group>
