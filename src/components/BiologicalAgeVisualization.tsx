@@ -91,14 +91,16 @@ interface WireframeNetworkProps {
 const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const textRef = useRef<THREE.Mesh>(null);
+  const electrodesRef = useRef<THREE.Group>(null);
   const [pulseTime, setPulseTime] = useState(0);
   const { raycaster, camera, gl } = useThree();
   
   // Generate network nodes based on age
-  const { nodes, connections } = useMemo(() => {
+  const { nodes, connections, electrodes } = useMemo(() => {
     const nodeCount = Math.min(age, 20); // Max 20 nodes for performance
     const nodes: THREE.Vector3[] = [];
     const connections: [number, number][] = [];
+    const electrodes: { connection: [number, number], startTime: number }[] = [];
     
     // Create nodes in a sphere formation
     for (let i = 0; i < nodeCount; i++) {
@@ -122,7 +124,15 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       }
     }
     
-    return { nodes, connections };
+    // Create electrodes for each connection with staggered start times
+    connections.forEach((connection, index) => {
+      electrodes.push({
+        connection,
+        startTime: Math.random() * 5 // Random start time between 0-5 seconds
+      });
+    });
+    
+    return { nodes, connections, electrodes };
   }, [age]);
 
   // Handle click detection
@@ -203,22 +213,57 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
         );
       })}
       
-      {/* Render connections */}
+      {/* Render pulsing connections with alternating yellow/purple */}
       {connections.map(([start, end], index) => {
         const points = [nodes[start], nodes[end]];
         const intensity = Math.sin(pulseTime * 3 - index * 0.1) * 0.5 + 0.5;
+        const isYellow = index % 2 === 0;
+        const color = isYellow ? "#ffff00" : "#8b5cf6";
         
         return (
           <Line
             key={`connection-${index}`}
             points={points}
-            color="#ff00ff"
-            lineWidth={1}
+            color={color}
+            lineWidth={2}
             transparent
-            opacity={intensity * 0.8}
+            opacity={intensity * 0.9}
           />
         );
       })}
+      
+      {/* Render moving electrodes */}
+      <group ref={electrodesRef}>
+        {electrodes.map((electrode, index) => {
+          const { connection, startTime } = electrode;
+          const [start, end] = connection;
+          const startNode = nodes[start];
+          const endNode = nodes[end];
+          
+          // Calculate electrode position along the connection
+          const cycleTime = 2; // Time to complete one cycle
+          const adjustedTime = (pulseTime * 0.5 - startTime) % cycleTime;
+          const progress = Math.max(0, Math.min(1, adjustedTime / cycleTime));
+          
+          const position = new THREE.Vector3()
+            .lerpVectors(startNode, endNode, progress);
+          
+          // Electrode intensity and size based on movement
+          const electrodeIntensity = Math.sin(progress * Math.PI) * 0.8 + 0.2;
+          const size = 0.04 + electrodeIntensity * 0.02;
+          
+          return (
+            <mesh key={`electrode-${index}`} position={position}>
+              <sphereGeometry args={[size, 6, 6]} />
+              <meshBasicMaterial 
+                color={new THREE.Color(1, 1, 1)}
+                transparent
+                opacity={electrodeIntensity}
+              />
+            </mesh>
+          );
+        })}
+      </group>
     </group>
   );
 };
