@@ -190,14 +190,14 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       
       {/* Render nodes */}
       {nodes.map((node, index) => {
-        const pulseIntensity = Math.sin(pulseTime * 2 - index * 0.2) * 0.5 + 0.5;
+        const intensity = Math.sin(pulseTime * 2 - index * 0.2) * 0.5 + 0.5;
         return (
           <mesh key={`node-${index}`} position={node}>
             <sphereGeometry args={[0.08, 8, 8]} />
             <meshBasicMaterial 
               color="#00ffff" 
               transparent
-              opacity={0.5 + pulseIntensity * 0.5}
+              opacity={0.5 + intensity * 0.5}
             />
           </mesh>
         );
