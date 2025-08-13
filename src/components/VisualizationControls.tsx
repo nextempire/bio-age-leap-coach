@@ -9,12 +9,14 @@ interface VisualizationConfig {
   connectionDistance: number;
   lineColor1: string;
   lineColor2: string;
+  lineColor3: string;
   animationSpeed: number;
   electrodeSize: number;
   glowIntensity: number;
   rotationSpeed: number;
   pulseIntensity: number;
   cycleTime: number;
+  fadingSpeed: number;
 }
 
 interface VisualizationControlsProps {
@@ -60,9 +62,9 @@ const VisualizationControls = ({ config, onChange, onReset }: VisualizationContr
         </div>
 
         {/* Colors */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-2">
           <div className="space-y-2">
-            <Label>Line Color 1</Label>
+            <Label>Color 1</Label>
             <Input
               type="color"
               value={config.lineColor1}
@@ -71,11 +73,20 @@ const VisualizationControls = ({ config, onChange, onReset }: VisualizationContr
             />
           </div>
           <div className="space-y-2">
-            <Label>Line Color 2</Label>
+            <Label>Color 2</Label>
             <Input
               type="color"
               value={config.lineColor2}
               onChange={(e) => updateConfig('lineColor2', e.target.value)}
+              className="h-10"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Color 3</Label>
+            <Input
+              type="color"
+              value={config.lineColor3}
+              onChange={(e) => updateConfig('lineColor3', e.target.value)}
               className="h-10"
             />
           </div>
@@ -150,6 +161,18 @@ const VisualizationControls = ({ config, onChange, onReset }: VisualizationContr
             onValueChange={([value]) => updateConfig('pulseIntensity', value)}
             min={0.1}
             max={2.0}
+            step={0.1}
+            className="w-full"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Fading Speed: {config.fadingSpeed.toFixed(1)}x</Label>
+          <Slider
+            value={[config.fadingSpeed]}
+            onValueChange={([value]) => updateConfig('fadingSpeed', value)}
+            min={0.5}
+            max={8.0}
             step={0.1}
             className="w-full"
           />

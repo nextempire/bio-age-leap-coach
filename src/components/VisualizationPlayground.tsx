@@ -7,12 +7,14 @@ const defaultConfig: VisualizationConfig = {
   connectionDistance: 4.0,
   lineColor1: "#ffff00", // Yellow
   lineColor2: "#8b5cf6", // Purple
+  lineColor3: "#00ffff", // Cyan
   animationSpeed: 4.0,
   electrodeSize: 0.06,
   glowIntensity: 2.0,
   rotationSpeed: 0.008,
   pulseIntensity: 1.0,
-  cycleTime: 0.8
+  cycleTime: 0.8,
+  fadingSpeed: 2.0
 };
 
 interface VisualizationPlaygroundProps {

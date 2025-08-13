@@ -102,12 +102,14 @@ const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) =
     connectionDistance: 4.0,
     lineColor1: "#ffff00",
     lineColor2: "#8b5cf6",
+    lineColor3: "#00ffff",
     animationSpeed: 4.0,
     electrodeSize: 0.06,
     glowIntensity: 2.0,
     rotationSpeed: 0.008,
     pulseIntensity: 1.0,
-    cycleTime: 0.8
+    cycleTime: 0.8,
+    fadingSpeed: 2.0
   };
 
   const activeConfig = { ...defaultConfig, ...config };
@@ -233,22 +235,29 @@ const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) =
         );
       })}
       
-      {/* Render pulsing connections with alternating colors */}
+      {/* Render pulsing connections as circular shapes with 3 colors */}
       {connections.map(([start, end], index) => {
-        const points = [nodes[start], nodes[end]];
-        const intensity = Math.sin(pulseTime * 3 - index * 0.1) * 0.5 + 0.5;
-        const isYellow = index % 2 === 0;
-        const color = isYellow ? activeConfig.lineColor1 : activeConfig.lineColor2;
+        const startNode = nodes[start];
+        const endNode = nodes[end];
+        const midPoint = new THREE.Vector3().lerpVectors(startNode, endNode, 0.5);
+        const distance = startNode.distanceTo(endNode);
+        const intensity = Math.sin(pulseTime * activeConfig.fadingSpeed - index * 0.2) * 0.5 + 0.5;
+        
+        // Cycle through 3 colors
+        const colorIndex = index % 3;
+        const color = colorIndex === 0 ? activeConfig.lineColor1 : 
+                     colorIndex === 1 ? activeConfig.lineColor2 : activeConfig.lineColor3;
         
         return (
-          <Line
-            key={`connection-${index}`}
-            points={points}
-            color={color}
-            lineWidth={2}
-            transparent
-            opacity={intensity * 0.9}
-          />
+          <mesh key={`connection-${index}`} position={midPoint}>
+            <ringGeometry args={[distance * 0.05, distance * 0.15, 16]} />
+            <meshBasicMaterial 
+              color={color}
+              transparent
+              opacity={intensity * 0.7}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
         );
       })}
       
@@ -306,12 +315,14 @@ interface VisualizationConfig {
   connectionDistance: number;
   lineColor1: string;
   lineColor2: string;
+  lineColor3: string;
   animationSpeed: number;
   electrodeSize: number;
   glowIntensity: number;
   rotationSpeed: number;
   pulseIntensity: number;
   cycleTime: number;
+  fadingSpeed: number;
 }
 
 interface BiologicalAgeVisualizationProps {
