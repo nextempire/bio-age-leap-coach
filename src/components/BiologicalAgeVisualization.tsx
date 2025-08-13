@@ -235,29 +235,82 @@ const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) =
         );
       })}
       
-      {/* Render pulsing connections as circular shapes with 3 colors */}
+      {/* Render artistic flowing connections with multiple layers */}
       {connections.map(([start, end], index) => {
         const startNode = nodes[start];
         const endNode = nodes[end];
         const midPoint = new THREE.Vector3().lerpVectors(startNode, endNode, 0.5);
         const distance = startNode.distanceTo(endNode);
         const intensity = Math.sin(pulseTime * activeConfig.fadingSpeed - index * 0.2) * 0.5 + 0.5;
+        const flowOffset = Math.sin(pulseTime * 0.5 + index) * 0.1;
         
         // Cycle through 3 colors
         const colorIndex = index % 3;
         const color = colorIndex === 0 ? activeConfig.lineColor1 : 
                      colorIndex === 1 ? activeConfig.lineColor2 : activeConfig.lineColor3;
         
+        // Artistic flowing offset for organic feel
+        const artisticOffset = new THREE.Vector3(
+          Math.sin(pulseTime * 0.3 + index) * 0.2,
+          Math.cos(pulseTime * 0.4 + index * 1.5) * 0.15,
+          Math.sin(pulseTime * 0.2 + index * 2) * 0.1
+        );
+        const artisticMidPoint = midPoint.clone().add(artisticOffset);
+        
         return (
-          <mesh key={`connection-${index}`} position={midPoint}>
-            <ringGeometry args={[distance * 0.05, distance * 0.15, 16]} />
-            <meshBasicMaterial 
-              color={color}
-              transparent
-              opacity={intensity * 0.7}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
+          <group key={`connection-group-${index}`}>
+            {/* Main connection ring */}
+            <mesh position={artisticMidPoint}>
+              <ringGeometry args={[distance * 0.03, distance * 0.12, 32]} />
+              <meshBasicMaterial 
+                color={color}
+                transparent
+                opacity={intensity * 0.8}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+            
+            {/* Outer artistic glow layer */}
+            <mesh position={artisticMidPoint}>
+              <ringGeometry args={[distance * 0.1, distance * 0.25, 16]} />
+              <meshBasicMaterial 
+                color={color}
+                transparent
+                opacity={intensity * 0.3}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+            
+            {/* Inner artistic core */}
+            <mesh position={artisticMidPoint}>
+              <ringGeometry args={[0, distance * 0.05, 8]} />
+              <meshBasicMaterial 
+                color="#ffffff"
+                transparent
+                opacity={intensity * 0.9}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+            
+            {/* Particle trail effect */}
+            {Array.from({ length: 3 }).map((_, particleIndex) => {
+              const trailProgress = (particleIndex + 1) / 4;
+              const trailPosition = new THREE.Vector3()
+                .lerpVectors(startNode, endNode, trailProgress + flowOffset)
+                .add(artisticOffset.clone().multiplyScalar(0.5));
+              
+              return (
+                <mesh key={`trail-${particleIndex}`} position={trailPosition}>
+                  <sphereGeometry args={[0.02 * (1 - trailProgress), 6, 6]} />
+                  <meshBasicMaterial 
+                    color={color}
+                    transparent
+                    opacity={(1 - trailProgress) * intensity * 0.6}
+                  />
+                </mesh>
+              );
+            })}
+          </group>
         );
       })}
       
