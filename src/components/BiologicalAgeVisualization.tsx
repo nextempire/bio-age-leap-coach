@@ -90,7 +90,7 @@ interface WireframeNetworkProps {
 
 const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
   const groupRef = useRef<THREE.Group>(null);
-  const [pulseActive, setPulseActive] = useState(false);
+  const textRef = useRef<THREE.Mesh>(null);
   const [pulseTime, setPulseTime] = useState(0);
   const { raycaster, camera, gl } = useThree();
   
@@ -140,12 +140,7 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       const intersects = raycaster.intersectObjects(groupRef.current.children, true);
       
       if (intersects.length > 0) {
-        setPulseActive(true);
-        setPulseTime(0);
         onNodeClick();
-        
-        // Reset pulse after animation
-        setTimeout(() => setPulseActive(false), 2000);
       }
     };
     
@@ -159,39 +154,68 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
     }
     
-    if (pulseActive) {
-      setPulseTime(prev => prev + 0.02);
+    // Continuous pulsing animation
+    setPulseTime(state.clock.elapsedTime * 2);
+    
+    // Update text color and scale based on pulse
+    if (textRef.current) {
+      const pulseIntensity = Math.sin(state.clock.elapsedTime * 3) * 0.3 + 0.7;
+      textRef.current.scale.setScalar(0.8 + pulseIntensity * 0.2);
     }
   });
 
   return (
     <group ref={groupRef}>
+      {/* Central Age Display */}
+      <mesh ref={textRef} position={[0, 0, 0]}>
+        <sphereGeometry args={[0.6, 16, 16]} />
+        <meshBasicMaterial 
+          color="#ff00ff"
+          transparent
+          opacity={0.3}
+          wireframe={true}
+        />
+      </mesh>
+      
+      {/* Age Number as 3D Text using basic geometry */}
+      <mesh position={[0, 0, 0]}>
+        <ringGeometry args={[0.8, 1.2, 8]} />
+        <meshBasicMaterial 
+          color="#00ffff"
+          transparent
+          opacity={Math.sin(pulseTime) * 0.3 + 0.7}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      
       {/* Render nodes */}
-      {nodes.map((node, index) => (
-        <mesh key={`node-${index}`} position={node}>
-          <sphereGeometry args={[0.08, 8, 8]} />
-          <meshBasicMaterial 
-            color={pulseActive ? "#ff00ff" : "#00ffff"} 
-            transparent
-            opacity={pulseActive ? 0.9 : 0.7}
-          />
-        </mesh>
-      ))}
+      {nodes.map((node, index) => {
+        const pulseIntensity = Math.sin(pulseTime * 2 - index * 0.2) * 0.5 + 0.5;
+        return (
+          <mesh key={`node-${index}`} position={node}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+            <meshBasicMaterial 
+              color="#00ffff" 
+              transparent
+              opacity={0.5 + pulseIntensity * 0.5}
+            />
+          </mesh>
+        );
+      })}
       
       {/* Render connections */}
       {connections.map(([start, end], index) => {
         const points = [nodes[start], nodes[end]];
-        const intensity = pulseActive ? 
-          Math.sin(pulseTime * 10 - index * 0.1) * 0.5 + 0.5 : 0.5;
+        const intensity = Math.sin(pulseTime * 3 - index * 0.1) * 0.5 + 0.5;
         
         return (
           <Line
             key={`connection-${index}`}
             points={points}
-            color={pulseActive ? "#ff00ff" : "#00ffff"}
+            color="#ff00ff"
             lineWidth={1}
             transparent
-            opacity={intensity * 0.6}
+            opacity={intensity * 0.8}
           />
         );
       })}
@@ -276,21 +300,9 @@ const BiologicalAgeVisualization = ({
             <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} />
           </Canvas>
           
-          {/* Chronological Age Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
-              <div className="text-4xl font-bold font-parkinsans text-neon neon-glow mb-1">
-                {chronologicalAge}
-              </div>
-              <div className="text-xs text-muted-foreground font-light">
-                chronological age
-              </div>
-            </div>
-          </div>
-          
-          {/* Click hint */}
-          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/70 font-light pointer-events-none">
-            click to pulse
+          {/* Label only */}
+          <div className="absolute bottom-2 left-2 text-xs text-muted-foreground font-light pointer-events-none">
+            chronological age
           </div>
         </div>
       </div>
