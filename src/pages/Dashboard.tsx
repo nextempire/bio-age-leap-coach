@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Heart, Activity, Clock, Brain } from 'lucide-react';
 import BackToHome from '@/components/BackToHome';
 import { usePageSEO } from '@/hooks/usePageSEO';
-import BiologicalAgeVisualization from '@/components/BiologicalAgeVisualization';
+import VisualizationPlayground from '@/components/VisualizationPlayground';
 
 interface Habit {
   id: number;
@@ -147,7 +147,7 @@ const Dashboard = () => {
             <div className="neon-line w-16 mx-auto mt-2"></div>
           </CardHeader>
           <CardContent className="p-6">
-            <BiologicalAgeVisualization 
+            <VisualizationPlayground 
               biologicalAge={biologicalAge} 
               chronologicalAge={chronologicalAge}
               className="mb-6"

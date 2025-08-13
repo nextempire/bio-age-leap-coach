@@ -86,18 +86,35 @@ const AnimatedPointCloud = ({ targetAge, startAge }: PointCloudProps) => {
 interface WireframeNetworkProps {
   age: number;
   onNodeClick: () => void;
+  config?: VisualizationConfig;
 }
 
-const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
+const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const textRef = useRef<THREE.Mesh>(null);
   const electrodesRef = useRef<THREE.Group>(null);
   const [pulseTime, setPulseTime] = useState(0);
   const { raycaster, camera, gl } = useThree();
   
+  // Default config values
+  const defaultConfig = {
+    nodeCount: 8,
+    connectionDistance: 4.0,
+    lineColor1: "#ffff00",
+    lineColor2: "#8b5cf6",
+    animationSpeed: 4.0,
+    electrodeSize: 0.06,
+    glowIntensity: 2.0,
+    rotationSpeed: 0.008,
+    pulseIntensity: 1.0,
+    cycleTime: 0.8
+  };
+
+  const activeConfig = { ...defaultConfig, ...config };
+  
   // Generate network nodes based on age
   const { nodes, connections, electrodes } = useMemo(() => {
-    const nodeCount = Math.min(Math.max(age / 3, 6), 12); // Fewer nodes (6-12)
+    const nodeCount = activeConfig.nodeCount;
     const nodes: THREE.Vector3[] = [];
     const connections: [number, number][] = [];
     const electrodes: { connection: [number, number], startTime: number }[] = [];
@@ -115,10 +132,10 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
       ));
     }
     
-    // Create MORE connections with longer distance threshold
+    // Create connections with configurable distance threshold
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
-        if (nodes[i].distanceTo(nodes[j]) < 4.0) { // Increased from 2.5 to 4.0 for more lines
+        if (nodes[i].distanceTo(nodes[j]) < activeConfig.connectionDistance) {
           connections.push([i, j]);
         }
       }
@@ -128,12 +145,12 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
     connections.forEach((connection, index) => {
       electrodes.push({
         connection,
-        startTime: Math.random() * 2 // Faster cycling with shorter random start times
+        startTime: Math.random() * 2
       });
     });
     
     return { nodes, connections, electrodes };
-  }, [age]);
+  }, [age, activeConfig.nodeCount, activeConfig.connectionDistance]);
 
   // Handle click detection
   useEffect(() => {
@@ -160,18 +177,18 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-      // More snappy rotation with jerky movements
+      // Configurable rotation with jerky movements
       const time = state.clock.elapsedTime;
-      groupRef.current.rotation.y += 0.008 + Math.sin(time * 8) * 0.002;
+      groupRef.current.rotation.y += activeConfig.rotationSpeed + Math.sin(time * 8) * 0.002;
       groupRef.current.rotation.x = Math.sin(time * 0.4) * 0.15 + Math.sin(time * 12) * 0.03;
     }
     
-    // Faster, more snappy pulsing animation
-    setPulseTime(state.clock.elapsedTime * 4); // Doubled speed for snappier animation
+    // Configurable pulsing animation speed
+    setPulseTime(state.clock.elapsedTime * activeConfig.animationSpeed);
     
-    // Update text color and scale with more dramatic jumps
+    // Update text color and scale with configurable pulse intensity
     if (textRef.current) {
-      const pulseIntensity = Math.sin(state.clock.elapsedTime * 6) * 0.4 + 0.6;
+      const pulseIntensity = Math.sin(state.clock.elapsedTime * 6) * 0.4 * activeConfig.pulseIntensity + 0.6;
       const jumpyScale = 0.7 + pulseIntensity * 0.3 + Math.sin(state.clock.elapsedTime * 15) * 0.05;
       textRef.current.scale.setScalar(jumpyScale);
     }
@@ -216,12 +233,12 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
         );
       })}
       
-      {/* Render pulsing connections with alternating yellow/purple */}
+      {/* Render pulsing connections with alternating colors */}
       {connections.map(([start, end], index) => {
         const points = [nodes[start], nodes[end]];
         const intensity = Math.sin(pulseTime * 3 - index * 0.1) * 0.5 + 0.5;
         const isYellow = index % 2 === 0;
-        const color = isYellow ? "#ffff00" : "#8b5cf6";
+        const color = isYellow ? activeConfig.lineColor1 : activeConfig.lineColor2;
         
         return (
           <Line
@@ -243,17 +260,17 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
           const startNode = nodes[start];
           const endNode = nodes[end];
           
-          // Calculate electrode position along the connection - faster movement
-          const cycleTime = 0.8; // Much faster cycle time for snappy movement
+          // Calculate electrode position along the connection - configurable movement
+          const cycleTime = activeConfig.cycleTime;
           const adjustedTime = (pulseTime * 1.2 - startTime) % cycleTime;
           const progress = Math.max(0, Math.min(1, adjustedTime / cycleTime));
           
           const position = new THREE.Vector3()
             .lerpVectors(startNode, endNode, progress);
           
-          // Electrode intensity and size with more dramatic variations
+          // Electrode intensity and size with configurable parameters
           const electrodeIntensity = Math.sin(progress * Math.PI) * 0.9 + 0.3;
-          const size = 0.06 + electrodeIntensity * 0.04; // Bigger, more visible electrodes
+          const size = activeConfig.electrodeSize + electrodeIntensity * (activeConfig.electrodeSize * 0.5);
           
           return (
             <group key={`electrode-group-${index}`}>
@@ -269,11 +286,11 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
               
               {/* Outer glow effect */}
               <mesh position={position}>
-                <sphereGeometry args={[size * 2, 8, 8]} />
+                <sphereGeometry args={[size * activeConfig.glowIntensity, 8, 8]} />
                 <meshBasicMaterial 
                   color={new THREE.Color(0.5, 0.8, 1)}
                   transparent
-                  opacity={electrodeIntensity * 0.3}
+                  opacity={electrodeIntensity * 0.3 * (activeConfig.glowIntensity / 2)}
                 />
               </mesh>
             </group>
@@ -284,16 +301,31 @@ const WireframeNetwork = ({ age, onNodeClick }: WireframeNetworkProps) => {
   );
 };
 
+interface VisualizationConfig {
+  nodeCount: number;
+  connectionDistance: number;
+  lineColor1: string;
+  lineColor2: string;
+  animationSpeed: number;
+  electrodeSize: number;
+  glowIntensity: number;
+  rotationSpeed: number;
+  pulseIntensity: number;
+  cycleTime: number;
+}
+
 interface BiologicalAgeVisualizationProps {
   biologicalAge: number;
   chronologicalAge: number;
   className?: string;
+  config?: VisualizationConfig;
 }
 
 const BiologicalAgeVisualization = ({ 
   biologicalAge, 
   chronologicalAge, 
-  className = "" 
+  className = "",
+  config
 }: BiologicalAgeVisualizationProps) => {
   const [currentDisplayAge, setCurrentDisplayAge] = useState(1);
 
@@ -330,7 +362,7 @@ const BiologicalAgeVisualization = ({
           <ambientLight intensity={0.3} />
           <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
           <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
-          <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} />
+          <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} config={config} />
         </Canvas>
         
         {/* Floating Chronological Age Display */}
