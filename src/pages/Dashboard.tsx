@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Heart, Activity, Clock, Brain } from 'lucide-react';
 import BackToHome from '@/components/BackToHome';
 import { usePageSEO } from '@/hooks/usePageSEO';
+import BiologicalAgeVisualization from '@/components/BiologicalAgeVisualization';
 
 interface Habit {
   id: number;
@@ -134,30 +135,33 @@ const Dashboard = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center py-6">
-          <h1 className="text-3xl font-bold font-parkinsans text-foreground mb-2">Your Health Journey</h1>
+          <h1 className="text-3xl font-bold font-parkinsans text-foreground mb-4">Your Health Journey</h1>
+          <div className="neon-line w-32 mx-auto mb-4"></div>
           <p className="text-muted-foreground font-light">Track your progress toward optimal health</p>
         </div>
 
-        {/* Biological Age Card */}
-        <Card className="bg-gradient-to-r from-primary to-accent text-foreground border-none shadow-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-semibold font-parkinsans">Biological Age</CardTitle>
+        {/* Biological Age Visualization */}
+        <Card className="minimal-border bg-card/30 backdrop-blur-sm hover-float overflow-hidden">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xl font-semibold font-parkinsans text-center">Biological Age</CardTitle>
+            <div className="neon-line w-16 mx-auto mt-2"></div>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-4xl font-bold font-parkinsans">{biologicalAge}</div>
-                <div className="text-foreground/70 mt-1 font-light">vs {chronologicalAge} chronological</div>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center text-foreground">
-                  <TrendingUp className="w-5 h-5 mr-1" />
+          <CardContent className="p-6">
+            <BiologicalAgeVisualization 
+              biologicalAge={biologicalAge} 
+              chronologicalAge={chronologicalAge}
+              className="mb-6"
+            />
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="flex items-center justify-center text-accent mb-2">
+                  <TrendingUp className="w-5 h-5 mr-2" />
                   <span className="text-lg font-semibold font-parkinsans">
                     {isImproving ? `${improvement} years younger` : 'On track'}
                   </span>
                 </div>
-                <div className="text-foreground/70 text-sm font-light">
-                  {improvementPercent}% improvement
+                <div className="text-muted-foreground text-sm font-light">
+                  {improvementPercent}% improvement over time
                 </div>
               </div>
             </div>
@@ -165,48 +169,56 @@ const Dashboard = () => {
         </Card>
 
         {/* Category Overview Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categoryAggregations.map(({ key, icon: Icon, name, color, bgColor, habitsCount, completedCount, progress, streak }) => (
-            <Card key={key} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <Icon className={`w-6 h-6 ${color}`} />
-                  <Badge variant="secondary" className={`${bgColor} font-light`}>
-                    {streak} avg streak
-                  </Badge>
-                </div>
-                <h3 className="font-semibold text-foreground font-parkinsans">{name}</h3>
-                <p className="text-sm text-muted-foreground mb-3 font-light">{completedCount}/{habitsCount} habits completed</p>
-                <Progress value={progress} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1 font-light">{Math.round(progress)}% average progress</p>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-4">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold font-parkinsans text-foreground mb-2">Health Categories</h2>
+            <div className="neon-line w-24 mx-auto"></div>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {categoryAggregations.map(({ key, icon: Icon, name, color, bgColor, habitsCount, completedCount, progress, streak }) => (
+              <Card key={key} className="minimal-border bg-card/20 backdrop-blur-sm hover-float transition-all duration-300">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <Icon className={`w-6 h-6 text-neon`} />
+                    <Badge variant="secondary" className="bg-accent/20 text-accent font-light border border-accent/30">
+                      {streak} streak
+                    </Badge>
+                  </div>
+                  <h3 className="font-semibold text-foreground font-parkinsans mb-1">{name}</h3>
+                  <div className="neon-line w-8 mb-2"></div>
+                  <p className="text-sm text-muted-foreground mb-3 font-light">{completedCount}/{habitsCount} completed</p>
+                  <Progress value={progress} className="h-2 mb-2" />
+                  <p className="text-xs text-muted-foreground font-light">{Math.round(progress)}% progress</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Quick Insights */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-parkinsans">Today's Insights</CardTitle>
+        <Card className="minimal-border bg-card/20 backdrop-blur-sm hover-float">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg font-parkinsans text-center">Today's Insights</CardTitle>
+            <div className="neon-line w-16 mx-auto mt-2"></div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-card/30 border border-neon/20">
+                <div className="w-2 h-2 bg-neon rounded-full mt-2 shadow-sm shadow-neon"></div>
                 <div>
                   <p className="font-medium text-foreground font-parkinsans">Great sleep consistency!</p>
                   <p className="text-sm text-muted-foreground font-light">Your recovery habits are helping lower your biological age by an estimated 0.3 years.</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-card/30 border border-neon/20">
+                <div className="w-2 h-2 bg-neon rounded-full mt-2 shadow-sm shadow-neon"></div>
                 <div>
                   <p className="font-medium text-foreground font-parkinsans">Nutrition opportunity</p>
                   <p className="text-sm text-muted-foreground font-light">Complete your hydration goal to boost cellular function and energy levels.</p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-card/30 border border-neon/20">
+                <div className="w-2 h-2 bg-neon rounded-full mt-2 shadow-sm shadow-neon"></div>
                 <div>
                   <p className="font-medium text-foreground font-parkinsans">Movement boost needed</p>
                   <p className="text-sm text-muted-foreground font-light">6 more minutes of cardio will complete your movement goals for today.</p>

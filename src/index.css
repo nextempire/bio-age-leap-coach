@@ -165,6 +165,27 @@
   }
   .glow-card:hover::before { opacity: 0.4; }
   .glow-card:hover::after { opacity: 0.18; }
+
+  /* Neon glow text effect */
+  .neon-glow {
+    text-shadow: 
+      0 0 5px hsl(var(--neon)),
+      0 0 10px hsl(var(--neon)),
+      0 0 15px hsl(var(--neon)),
+      0 0 20px hsl(var(--neon) / 0.8);
+  }
+
+  /* Minimal neon elements */
+  .neon-line { 
+    background: linear-gradient(90deg, transparent, hsl(var(--neon)), transparent);
+    height: 1px;
+    opacity: 0.6;
+  }
+  
+  .minimal-border { 
+    border: 1px solid hsl(var(--neon) / 0.3); 
+    box-shadow: 0 0 10px hsl(var(--neon) / 0.1);
+  }
 }
 
 @keyframes glow-rotate {
