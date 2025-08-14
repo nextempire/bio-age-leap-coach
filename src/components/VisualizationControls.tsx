@@ -5,18 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface VisualizationConfig {
-  nodeCount: number;
-  connectionDistance: number;
-  lineColor1: string;
-  lineColor2: string;
-  lineColor3: string;
+  electrodeCount: number;
+  orbitRadius: number;
+  nucleusColor: string;
+  electrodeColor: string;
+  electricityColor: string;
   animationSpeed: number;
   electrodeSize: number;
-  glowIntensity: number;
+  nucleusSize: number;
+  electricityIntensity: number;
   rotationSpeed: number;
   pulseIntensity: number;
-  cycleTime: number;
-  fadingSpeed: number;
+  orbitSpeed: number;
 }
 
 interface VisualizationControlsProps {
@@ -26,156 +26,168 @@ interface VisualizationControlsProps {
 }
 
 const VisualizationControls = ({ config, onChange, onReset }: VisualizationControlsProps) => {
-  const updateConfig = (key: keyof VisualizationConfig, value: number | string) => {
-    onChange({ ...config, [key]: value });
-  };
-
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-lg">Visualization Controls</CardTitle>
+        <CardTitle>Nucleus Controls</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Node Configuration */}
-        <div className="space-y-2">
-          <Label>Node Count: {config.nodeCount}</Label>
-          <Slider
-            value={[config.nodeCount]}
-            onValueChange={([value]) => updateConfig('nodeCount', value)}
-            min={4}
-            max={20}
-            step={1}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Connection Distance: {config.connectionDistance.toFixed(1)}</Label>
-          <Slider
-            value={[config.connectionDistance]}
-            onValueChange={([value]) => updateConfig('connectionDistance', value)}
-            min={1.5}
-            max={6.0}
-            step={0.1}
-            className="w-full"
-          />
+        {/* Structure */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Structure</h3>
+          
+          <div className="space-y-2">
+            <Label>Electrode Count: {config.electrodeCount}</Label>
+            <Slider
+              value={[config.electrodeCount]}
+              onValueChange={(value) => onChange({ ...config, electrodeCount: value[0] })}
+              max={12}
+              min={3}
+              step={1}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Orbit Radius: {config.orbitRadius.toFixed(1)}</Label>
+            <Slider
+              value={[config.orbitRadius]}
+              onValueChange={(value) => onChange({ ...config, orbitRadius: value[0] })}
+              max={4.0}
+              min={1.5}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Nucleus Size: {config.nucleusSize.toFixed(2)}</Label>
+            <Slider
+              value={[config.nucleusSize]}
+              onValueChange={(value) => onChange({ ...config, nucleusSize: value[0] })}
+              max={0.8}
+              min={0.2}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Electrode Size: {config.electrodeSize.toFixed(3)}</Label>
+            <Slider
+              value={[config.electrodeSize]}
+              onValueChange={(value) => onChange({ ...config, electrodeSize: value[0] })}
+              max={0.15}
+              min={0.03}
+              step={0.01}
+              className="w-full"
+            />
+          </div>
         </div>
 
         {/* Colors */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Colors</h3>
+          
+          <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-2">
+              <Label>Nucleus</Label>
+              <Input
+                type="color"
+                value={config.nucleusColor}
+                onChange={(e) => onChange({ ...config, nucleusColor: e.target.value })}
+                className="h-8 w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Electrodes</Label>
+              <Input
+                type="color"
+                value={config.electrodeColor}
+                onChange={(e) => onChange({ ...config, electrodeColor: e.target.value })}
+                className="h-8 w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Electricity</Label>
+              <Input
+                type="color"
+                value={config.electricityColor}
+                onChange={(e) => onChange({ ...config, electricityColor: e.target.value })}
+                className="h-8 w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Animation */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Animation</h3>
+          
           <div className="space-y-2">
-            <Label>Color 1</Label>
-            <Input
-              type="color"
-              value={config.lineColor1}
-              onChange={(e) => updateConfig('lineColor1', e.target.value)}
-              className="h-10"
+            <Label>Animation Speed: {config.animationSpeed.toFixed(1)}</Label>
+            <Slider
+              value={[config.animationSpeed]}
+              onValueChange={(value) => onChange({ ...config, animationSpeed: value[0] })}
+              max={3.0}
+              min={0.1}
+              step={0.1}
+              className="w-full"
             />
           </div>
+          
           <div className="space-y-2">
-            <Label>Color 2</Label>
-            <Input
-              type="color"
-              value={config.lineColor2}
-              onChange={(e) => updateConfig('lineColor2', e.target.value)}
-              className="h-10"
+            <Label>Orbit Speed: {config.orbitSpeed.toFixed(1)}</Label>
+            <Slider
+              value={[config.orbitSpeed]}
+              onValueChange={(value) => onChange({ ...config, orbitSpeed: value[0] })}
+              max={1.0}
+              min={0.1}
+              step={0.1}
+              className="w-full"
             />
           </div>
+          
           <div className="space-y-2">
-            <Label>Color 3</Label>
-            <Input
-              type="color"
-              value={config.lineColor3}
-              onChange={(e) => updateConfig('lineColor3', e.target.value)}
-              className="h-10"
+            <Label>Rotation Speed: {config.rotationSpeed.toFixed(1)}</Label>
+            <Slider
+              value={[config.rotationSpeed]}
+              onValueChange={(value) => onChange({ ...config, rotationSpeed: value[0] })}
+              max={2.0}
+              min={0.1}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Pulse Intensity: {config.pulseIntensity.toFixed(1)}</Label>
+            <Slider
+              value={[config.pulseIntensity]}
+              onValueChange={(value) => onChange({ ...config, pulseIntensity: value[0] })}
+              max={2.0}
+              min={0.1}
+              step={0.1}
+              className="w-full"
             />
           </div>
         </div>
 
-        {/* Animation Settings */}
-        <div className="space-y-2">
-          <Label>Animation Speed: {config.animationSpeed.toFixed(1)}x</Label>
-          <Slider
-            value={[config.animationSpeed]}
-            onValueChange={([value]) => updateConfig('animationSpeed', value)}
-            min={0.1}
-            max={5.0}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Rotation Speed: {config.rotationSpeed.toFixed(3)}</Label>
-          <Slider
-            value={[config.rotationSpeed]}
-            onValueChange={([value]) => updateConfig('rotationSpeed', value)}
-            min={0.001}
-            max={0.02}
-            step={0.001}
-            className="w-full"
-          />
-        </div>
-
-        {/* Electrode Settings */}
-        <div className="space-y-2">
-          <Label>Electrode Size: {config.electrodeSize.toFixed(2)}</Label>
-          <Slider
-            value={[config.electrodeSize]}
-            onValueChange={([value]) => updateConfig('electrodeSize', value)}
-            min={0.02}
-            max={0.15}
-            step={0.01}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Glow Intensity: {config.glowIntensity.toFixed(1)}</Label>
-          <Slider
-            value={[config.glowIntensity]}
-            onValueChange={([value]) => updateConfig('glowIntensity', value)}
-            min={0.1}
-            max={3.0}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Cycle Time: {config.cycleTime.toFixed(1)}s</Label>
-          <Slider
-            value={[config.cycleTime]}
-            onValueChange={([value]) => updateConfig('cycleTime', value)}
-            min={0.2}
-            max={3.0}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Pulse Intensity: {config.pulseIntensity.toFixed(1)}</Label>
-          <Slider
-            value={[config.pulseIntensity]}
-            onValueChange={([value]) => updateConfig('pulseIntensity', value)}
-            min={0.1}
-            max={2.0}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Fading Speed: {config.fadingSpeed.toFixed(1)}x</Label>
-          <Slider
-            value={[config.fadingSpeed]}
-            onValueChange={([value]) => updateConfig('fadingSpeed', value)}
-            min={0.5}
-            max={8.0}
-            step={0.1}
-            className="w-full"
-          />
+        {/* Electricity Effects */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Electricity</h3>
+          
+          <div className="space-y-2">
+            <Label>Electricity Intensity: {config.electricityIntensity.toFixed(1)}</Label>
+            <Slider
+              value={[config.electricityIntensity]}
+              onValueChange={(value) => onChange({ ...config, electricityIntensity: value[0] })}
+              max={2.0}
+              min={0.1}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
         </div>
 
         <Button onClick={onReset} variant="outline" className="w-full">

@@ -3,18 +3,18 @@ import BiologicalAgeVisualization from "./BiologicalAgeVisualization";
 import VisualizationControls, { VisualizationConfig } from "./VisualizationControls";
 
 const defaultConfig: VisualizationConfig = {
-  nodeCount: 8,
-  connectionDistance: 4.0,
-  lineColor1: "#ffff00", // Yellow
-  lineColor2: "#8b5cf6", // Purple
-  lineColor3: "#00ffff", // Cyan
-  animationSpeed: 4.0,
-  electrodeSize: 0.06,
-  glowIntensity: 2.0,
-  rotationSpeed: 0.008,
+  electrodeCount: 6,
+  orbitRadius: 2.5,
+  nucleusColor: "#ffffff",
+  electrodeColor: "#00ffff",
+  electricityColor: "#ffff00",
+  animationSpeed: 1.0,
+  electrodeSize: 0.08,
+  nucleusSize: 0.4,
+  electricityIntensity: 1.0,
+  rotationSpeed: 0.5,
   pulseIntensity: 1.0,
-  cycleTime: 0.8,
-  fadingSpeed: 2.0
+  orbitSpeed: 0.3
 };
 
 interface VisualizationPlaygroundProps {

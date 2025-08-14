@@ -83,76 +83,60 @@ const AnimatedPointCloud = ({ targetAge, startAge }: PointCloudProps) => {
   );
 };
 
-interface WireframeNetworkProps {
+interface NucleusVisualizationProps {
   age: number;
   onNodeClick: () => void;
   config?: VisualizationConfig;
 }
 
-const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) => {
+const NucleusVisualization = ({ age, onNodeClick, config }: NucleusVisualizationProps) => {
   const groupRef = useRef<THREE.Group>(null);
-  const textRef = useRef<THREE.Mesh>(null);
+  const nucleusRef = useRef<THREE.Mesh>(null);
   const electrodesRef = useRef<THREE.Group>(null);
   const [pulseTime, setPulseTime] = useState(0);
   const { raycaster, camera, gl } = useThree();
   
   // Default config values
   const defaultConfig = {
-    nodeCount: 8,
-    connectionDistance: 4.0,
-    lineColor1: "#ffff00",
-    lineColor2: "#8b5cf6",
-    lineColor3: "#00ffff",
-    animationSpeed: 4.0,
-    electrodeSize: 0.06,
-    glowIntensity: 2.0,
-    rotationSpeed: 0.008,
+    electrodeCount: 6,
+    orbitRadius: 2.5,
+    nucleusColor: "#ffffff",
+    electrodeColor: "#00ffff",
+    electricityColor: "#ffff00",
+    animationSpeed: 1.0,
+    electrodeSize: 0.08,
+    nucleusSize: 0.4,
+    electricityIntensity: 1.0,
+    rotationSpeed: 0.5,
     pulseIntensity: 1.0,
-    cycleTime: 0.8,
-    fadingSpeed: 2.0
+    orbitSpeed: 0.3
   };
 
   const activeConfig = { ...defaultConfig, ...config };
   
-  // Generate network nodes based on age
-  const { nodes, connections, electrodes } = useMemo(() => {
-    const nodeCount = activeConfig.nodeCount;
-    const nodes: THREE.Vector3[] = [];
-    const connections: [number, number][] = [];
-    const electrodes: { connection: [number, number], startTime: number }[] = [];
+  // Generate orbiting electrodes
+  const electrodes = useMemo(() => {
+    const electrodeCount = activeConfig.electrodeCount;
+    const electrodes: { 
+      id: number, 
+      orbitRadius: number, 
+      orbitSpeed: number, 
+      orbitOffset: number,
+      verticalOffset: number 
+    }[] = [];
     
-    // Create nodes in a sphere formation
-    for (let i = 0; i < nodeCount; i++) {
-      const radius = 2 + Math.random() * 1.5;
-      const theta = (i / nodeCount) * Math.PI * 2;
-      const phi = Math.acos(1 - 2 * Math.random());
-      
-      nodes.push(new THREE.Vector3(
-        radius * Math.sin(phi) * Math.cos(theta),
-        radius * Math.sin(phi) * Math.sin(theta),
-        radius * Math.cos(phi)
-      ));
-    }
-    
-    // Create connections with configurable distance threshold
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        if (nodes[i].distanceTo(nodes[j]) < activeConfig.connectionDistance) {
-          connections.push([i, j]);
-        }
-      }
-    }
-    
-    // Create electrodes for each connection with staggered start times
-    connections.forEach((connection, index) => {
+    for (let i = 0; i < electrodeCount; i++) {
       electrodes.push({
-        connection,
-        startTime: Math.random() * 2
+        id: i,
+        orbitRadius: activeConfig.orbitRadius + (Math.random() - 0.5) * 0.8,
+        orbitSpeed: activeConfig.orbitSpeed + (Math.random() - 0.5) * 0.3,
+        orbitOffset: (i / electrodeCount) * Math.PI * 2,
+        verticalOffset: (Math.random() - 0.5) * 1.0
       });
-    });
+    }
     
-    return { nodes, connections, electrodes };
-  }, [age, activeConfig.nodeCount, activeConfig.connectionDistance]);
+    return electrodes;
+  }, [age, activeConfig.electrodeCount, activeConfig.orbitRadius, activeConfig.orbitSpeed]);
 
   // Handle click detection
   useEffect(() => {
@@ -179,180 +163,134 @@ const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) =
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Configurable rotation with jerky movements
       const time = state.clock.elapsedTime;
-      groupRef.current.rotation.y += activeConfig.rotationSpeed + Math.sin(time * 8) * 0.002;
-      groupRef.current.rotation.x = Math.sin(time * 0.4) * 0.15 + Math.sin(time * 12) * 0.03;
+      groupRef.current.rotation.y += activeConfig.rotationSpeed * 0.01;
     }
     
-    // Configurable pulsing animation speed
     setPulseTime(state.clock.elapsedTime * activeConfig.animationSpeed);
     
-    // Update text color and scale with configurable pulse intensity
-    if (textRef.current) {
-      const pulseIntensity = Math.sin(state.clock.elapsedTime * 6) * 0.4 * activeConfig.pulseIntensity + 0.6;
-      const jumpyScale = 0.7 + pulseIntensity * 0.3 + Math.sin(state.clock.elapsedTime * 15) * 0.05;
-      textRef.current.scale.setScalar(jumpyScale);
+    // Animate nucleus pulsing
+    if (nucleusRef.current) {
+      const pulseIntensity = Math.sin(state.clock.elapsedTime * 4) * 0.2 * activeConfig.pulseIntensity + 1.0;
+      nucleusRef.current.scale.setScalar(pulseIntensity);
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Central Age Display */}
-      <mesh ref={textRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[0.6, 16, 16]} />
+      {/* Central Nucleus */}
+      <mesh ref={nucleusRef} position={[0, 0, 0]}>
+        <sphereGeometry args={[activeConfig.nucleusSize, 32, 32]} />
         <meshBasicMaterial 
-          color="#ff00ff"
+          color={activeConfig.nucleusColor}
           transparent
-          opacity={0.3}
-          wireframe={true}
+          opacity={0.7}
         />
       </mesh>
       
-      {/* Age Number as 3D Text using basic geometry */}
+      {/* Nucleus glow */}
       <mesh position={[0, 0, 0]}>
-        <ringGeometry args={[0.8, 1.2, 8]} />
+        <sphereGeometry args={[activeConfig.nucleusSize * 1.5, 16, 16]} />
         <meshBasicMaterial 
-          color="#00ffff"
+          color={activeConfig.nucleusColor}
+          transparent
+          opacity={Math.sin(pulseTime * 2) * 0.2 + 0.3}
+        />
+      </mesh>
+      
+      {/* Age Number Display */}
+      <mesh position={[0, 0, 0]}>
+        <ringGeometry args={[activeConfig.nucleusSize * 1.8, activeConfig.nucleusSize * 2.2, 8]} />
+        <meshBasicMaterial 
+          color={activeConfig.nucleusColor}
           transparent
           opacity={Math.sin(pulseTime) * 0.3 + 0.7}
           side={THREE.DoubleSide}
         />
       </mesh>
       
-      {/* Render nodes */}
-      {nodes.map((node, index) => {
-        const intensity = Math.sin(pulseTime * 2 - index * 0.2) * 0.5 + 0.5;
-        return (
-          <mesh key={`node-${index}`} position={node}>
-            <sphereGeometry args={[0.08, 8, 8]} />
-            <meshBasicMaterial 
-              color="#00ffff" 
-              transparent
-              opacity={0.5 + intensity * 0.5}
-            />
-          </mesh>
-        );
-      })}
-      
-      {/* Render artistic flowing connections with multiple layers */}
-      {connections.map(([start, end], index) => {
-        const startNode = nodes[start];
-        const endNode = nodes[end];
-        const midPoint = new THREE.Vector3().lerpVectors(startNode, endNode, 0.5);
-        const distance = startNode.distanceTo(endNode);
-        const intensity = Math.sin(pulseTime * activeConfig.fadingSpeed - index * 0.2) * 0.5 + 0.5;
-        const flowOffset = Math.sin(pulseTime * 0.5 + index) * 0.1;
-        
-        // Cycle through 3 colors
-        const colorIndex = index % 3;
-        const color = colorIndex === 0 ? activeConfig.lineColor1 : 
-                     colorIndex === 1 ? activeConfig.lineColor2 : activeConfig.lineColor3;
-        
-        // Artistic flowing offset for organic feel
-        const artisticOffset = new THREE.Vector3(
-          Math.sin(pulseTime * 0.3 + index) * 0.2,
-          Math.cos(pulseTime * 0.4 + index * 1.5) * 0.15,
-          Math.sin(pulseTime * 0.2 + index * 2) * 0.1
-        );
-        const artisticMidPoint = midPoint.clone().add(artisticOffset);
-        
-        return (
-          <group key={`connection-group-${index}`}>
-            {/* Main connection ring */}
-            <mesh position={artisticMidPoint}>
-              <ringGeometry args={[distance * 0.03, distance * 0.12, 32]} />
-              <meshBasicMaterial 
-                color={color}
-                transparent
-                opacity={intensity * 0.8}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-            
-            {/* Outer artistic glow layer */}
-            <mesh position={artisticMidPoint}>
-              <ringGeometry args={[distance * 0.1, distance * 0.25, 16]} />
-              <meshBasicMaterial 
-                color={color}
-                transparent
-                opacity={intensity * 0.3}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-            
-            {/* Inner artistic core */}
-            <mesh position={artisticMidPoint}>
-              <ringGeometry args={[0, distance * 0.05, 8]} />
-              <meshBasicMaterial 
-                color="#ffffff"
-                transparent
-                opacity={intensity * 0.9}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-            
-            {/* Particle trail effect */}
-            {Array.from({ length: 3 }).map((_, particleIndex) => {
-              const trailProgress = (particleIndex + 1) / 4;
-              const trailPosition = new THREE.Vector3()
-                .lerpVectors(startNode, endNode, trailProgress + flowOffset)
-                .add(artisticOffset.clone().multiplyScalar(0.5));
-              
-              return (
-                <mesh key={`trail-${particleIndex}`} position={trailPosition}>
-                  <sphereGeometry args={[0.02 * (1 - trailProgress), 6, 6]} />
-                  <meshBasicMaterial 
-                    color={color}
-                    transparent
-                    opacity={(1 - trailProgress) * intensity * 0.6}
-                  />
-                </mesh>
-              );
-            })}
-          </group>
-        );
-      })}
-      
-      {/* Render moving electrodes */}
+      {/* Orbiting Electrodes */}
       <group ref={electrodesRef}>
         {electrodes.map((electrode, index) => {
-          const { connection, startTime } = electrode;
-          const [start, end] = connection;
-          const startNode = nodes[start];
-          const endNode = nodes[end];
+          const time = pulseTime * electrode.orbitSpeed;
+          const angle = time + electrode.orbitOffset;
           
-          // Calculate electrode position along the connection - configurable movement
-          const cycleTime = activeConfig.cycleTime;
-          const adjustedTime = (pulseTime * 1.2 - startTime) % cycleTime;
-          const progress = Math.max(0, Math.min(1, adjustedTime / cycleTime));
+          // Calculate orbital position
+          const position = new THREE.Vector3(
+            Math.cos(angle) * electrode.orbitRadius,
+            electrode.verticalOffset + Math.sin(time * 2) * 0.3,
+            Math.sin(angle) * electrode.orbitRadius
+          );
           
-          const position = new THREE.Vector3()
-            .lerpVectors(startNode, endNode, progress);
-          
-          // Electrode intensity and size with configurable parameters
-          const electrodeIntensity = Math.sin(progress * Math.PI) * 0.9 + 0.3;
-          const size = activeConfig.electrodeSize + electrodeIntensity * (activeConfig.electrodeSize * 0.5);
+          // Electricity arc to nucleus
+          const electricityIntensity = Math.sin(time * 3 + index) * 0.5 + 0.5;
+          const arcMidPoint = position.clone().multiplyScalar(0.5);
+          const arcDistance = position.length();
           
           return (
-            <group key={`electrode-group-${index}`}>
-              {/* Main electrode sphere */}
+            <group key={`electrode-${index}`}>
+              {/* Orbiting electrode */}
               <mesh position={position}>
-                <sphereGeometry args={[size, 8, 8]} />
+                <sphereGeometry args={[activeConfig.electrodeSize, 12, 12]} />
                 <meshBasicMaterial 
-                  color={new THREE.Color(1, 1, 1)}
+                  color={activeConfig.electrodeColor}
                   transparent
-                  opacity={electrodeIntensity}
+                  opacity={0.9}
                 />
               </mesh>
               
-              {/* Outer glow effect */}
+              {/* Electrode glow */}
               <mesh position={position}>
-                <sphereGeometry args={[size * activeConfig.glowIntensity, 8, 8]} />
+                <sphereGeometry args={[activeConfig.electrodeSize * 2, 8, 8]} />
                 <meshBasicMaterial 
-                  color={new THREE.Color(0.5, 0.8, 1)}
+                  color={activeConfig.electrodeColor}
                   transparent
-                  opacity={electrodeIntensity * 0.3 * (activeConfig.glowIntensity / 2)}
+                  opacity={0.3}
+                />
+              </mesh>
+              
+              {/* Electricity arc connection to nucleus */}
+              <mesh position={arcMidPoint}>
+                <ringGeometry args={[arcDistance * 0.01, arcDistance * 0.03, 8]} />
+                <meshBasicMaterial 
+                  color={activeConfig.electricityColor}
+                  transparent
+                  opacity={electricityIntensity * activeConfig.electricityIntensity * 0.8}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+              
+              {/* Electric spark particles */}
+              {Array.from({ length: 3 }).map((_, sparkIndex) => {
+                const sparkProgress = (sparkIndex + 1) / 4;
+                const sparkPosition = new THREE.Vector3()
+                  .lerpVectors(new THREE.Vector3(0, 0, 0), position, sparkProgress)
+                  .add(new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.1,
+                    (Math.random() - 0.5) * 0.1,
+                    (Math.random() - 0.5) * 0.1
+                  ));
+                
+                return (
+                  <mesh key={`spark-${sparkIndex}`} position={sparkPosition}>
+                    <sphereGeometry args={[0.01 * (1 - sparkProgress), 4, 4]} />
+                    <meshBasicMaterial 
+                      color={activeConfig.electricityColor}
+                      transparent
+                      opacity={(1 - sparkProgress) * electricityIntensity * activeConfig.electricityIntensity}
+                    />
+                  </mesh>
+                );
+              })}
+              
+              {/* Orbital trail */}
+              <mesh position={position}>
+                <ringGeometry args={[electrode.orbitRadius * 0.98, electrode.orbitRadius * 1.02, 64]} />
+                <meshBasicMaterial 
+                  color={activeConfig.electrodeColor}
+                  transparent
+                  opacity={0.1}
+                  side={THREE.DoubleSide}
                 />
               </mesh>
             </group>
@@ -364,18 +302,18 @@ const WireframeNetwork = ({ age, onNodeClick, config }: WireframeNetworkProps) =
 };
 
 interface VisualizationConfig {
-  nodeCount: number;
-  connectionDistance: number;
-  lineColor1: string;
-  lineColor2: string;
-  lineColor3: string;
+  electrodeCount: number;
+  orbitRadius: number;
+  nucleusColor: string;
+  electrodeColor: string;
+  electricityColor: string;
   animationSpeed: number;
   electrodeSize: number;
-  glowIntensity: number;
+  nucleusSize: number;
+  electricityIntensity: number;
   rotationSpeed: number;
   pulseIntensity: number;
-  cycleTime: number;
-  fadingSpeed: number;
+  orbitSpeed: number;
 }
 
 interface BiologicalAgeVisualizationProps {
@@ -426,7 +364,7 @@ const BiologicalAgeVisualization = ({
           <ambientLight intensity={0.3} />
           <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
           <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
-          <WireframeNetwork age={chronologicalAge} onNodeClick={handleNodeClick} config={config} />
+          <NucleusVisualization age={chronologicalAge} onNodeClick={handleNodeClick} config={config} />
         </Canvas>
         
         {/* Floating Chronological Age Display */}
