@@ -36,13 +36,13 @@ const ShaderBackground = () => {
             z += f = 0.2 * (abs(p.z + p.x + 16.0 + tanh(p.y) / 0.1) + sin(p.x - p.z + t + t) + 1.0);
             o += (cos(p.x * 0.2 + f + vec4(6.0, 1.0, 2.0, 0.0)) + 2.0) / f / z;
             
-            for(c = p = z * normalize(FC.rgb * 2.0 - r.xyy), p.y *= f = 0.3; f < 5.0; f++) {
+            for(c = p = z * normalize(vec3(FC, 0.0) * 2.0 - vec3(r, 0.0)), p.y *= f = 0.3; f < 5.0; f++) {
               p += cos(p.yzx * f + i + z + x * t) / f;
             }
           }
           
           o = tanh(o / 30.0);
-          gl_FragColor = vec4(o.rgb * 0.3, 0.6); // Reduced opacity for background effect
+          gl_FragColor = vec4(o.rgb * 0.3, 0.6);
         }
       `,
       transparent: true,
