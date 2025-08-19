@@ -3,6 +3,70 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Points, PointMaterial, Line } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Shader background component
+const ShaderBackground = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  const shaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        t: { value: 0.0 },
+        r: { value: new THREE.Vector2(1.0, 1.0) },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float t;
+        uniform vec2 r;
+        varying vec2 vUv;
+        
+        void main() {
+          vec2 FC = vUv * r;
+          vec4 o = vec4(0.0);
+          vec3 x = vec3(0.0), c, p;
+          x.x += 9.0;
+          
+          for(float i = 0.0, z, f; i < 50.0; i++) {
+            p = mix(c, p, 0.3);
+            z += f = 0.2 * (abs(p.z + p.x + 16.0 + tanh(p.y) / 0.1) + sin(p.x - p.z + t + t) + 1.0);
+            o += (cos(p.x * 0.2 + f + vec4(6.0, 1.0, 2.0, 0.0)) + 2.0) / f / z;
+            
+            for(c = p = z * normalize(FC.rgb * 2.0 - r.xyy), p.y *= f = 0.3; f < 5.0; f++) {
+              p += cos(p.yzx * f + i + z + x * t) / f;
+            }
+          }
+          
+          o = tanh(o / 30.0);
+          gl_FragColor = vec4(o.rgb * 0.3, 0.6); // Reduced opacity for background effect
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+  }, []);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      shaderMaterial.uniforms.t.value = state.clock.elapsedTime * 0.5;
+      shaderMaterial.uniforms.r.value.set(
+        state.viewport.width,
+        state.viewport.height
+      );
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} material={shaderMaterial} position={[0, 0, -2]}>
+      <planeGeometry args={[20, 20]} />
+    </mesh>
+  );
+};
+
 interface PointCloudProps {
   targetAge: number;
   startAge: number;
@@ -364,6 +428,7 @@ const BiologicalAgeVisualization = ({
           <ambientLight intensity={0.3} />
           <pointLight position={[8, 8, 8]} intensity={0.8} color="#00ffff" />
           <pointLight position={[-8, -8, -8]} intensity={0.4} color="#ff00ff" />
+          <ShaderBackground />
           <NucleusVisualization age={chronologicalAge} onNodeClick={handleNodeClick} config={config} />
         </Canvas>
         
