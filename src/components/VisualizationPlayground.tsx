@@ -1,20 +1,21 @@
 import { useState } from "react";
-import BiologicalAgeVisualization from "./BiologicalAgeVisualization";
-import VisualizationControls, { VisualizationConfig } from "./VisualizationControls";
+import BiologicalAgeVisualization, { ShaderConfig } from "./BiologicalAgeVisualization";
+import VisualizationControls from "./VisualizationControls";
 
-const defaultConfig: VisualizationConfig = {
-  electrodeCount: 6,
-  orbitRadius: 2.5,
-  nucleusColor: "#ffffff",
-  electrodeColor: "#00ffff",
-  electricityColor: "#ffff00",
-  animationSpeed: 1.0,
-  electrodeSize: 0.08,
-  nucleusSize: 0.4,
-  electricityIntensity: 1.0,
-  rotationSpeed: 0.5,
-  pulseIntensity: 1.0,
-  orbitSpeed: 0.3
+const defaultConfig: ShaderConfig = {
+  timeSpeed: 0.5,
+  intensity: 1.0,
+  colorShiftR: 6.0,
+  colorShiftG: 1.0,
+  colorShiftB: 2.0,
+  complexity: 50.0,
+  mixFactor: 0.3,
+  scaleFactor: 0.2,
+  waveAmplitude: 16.0,
+  opacity: 0.6,
+  redChannel: 0.3,
+  greenChannel: 0.3,
+  blueChannel: 0.3
 };
 
 interface VisualizationPlaygroundProps {
@@ -28,7 +29,7 @@ const VisualizationPlayground = ({
   chronologicalAge, 
   className = "" 
 }: VisualizationPlaygroundProps) => {
-  const [config, setConfig] = useState<VisualizationConfig>(defaultConfig);
+  const [config, setConfig] = useState<ShaderConfig>(defaultConfig);
 
   const handleReset = () => {
     setConfig(defaultConfig);
